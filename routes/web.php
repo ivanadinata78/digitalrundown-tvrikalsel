@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman publik (tidak perlu login)
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('rundown.index');
+})->name('home');
 
 // -----------------------------------------------------------------------
 // Route yang memerlukan login (admin + karyawan)
