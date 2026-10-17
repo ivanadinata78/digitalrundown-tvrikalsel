@@ -133,6 +133,7 @@ class ComposerStaticInitd8f67b824a1bf31c8999ead558d9b485
             'Laravel\\Sail\\' => 13,
             'Laravel\\Prompts\\' => 16,
             'Laravel\\Pail\\' => 13,
+            'Laravel\\Breeze\\' => 15,
         ),
         'I' =>
         array (
@@ -433,6 +434,10 @@ class ComposerStaticInitd8f67b824a1bf31c8999ead558d9b485
         'Laravel\\Pail\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/pail/src',
+        ),
+        'Laravel\\Breeze\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/laravel/breeze/src',
         ),
         'Illuminate\\Support\\' =>
         array (
@@ -3017,6 +3022,12 @@ class ComposerStaticInitd8f67b824a1bf31c8999ead558d9b485
         'Illuminate\\View\\ViewFinderInterface' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewFinderInterface.php',
         'Illuminate\\View\\ViewName' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewName.php',
         'Illuminate\\View\\ViewServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewServiceProvider.php',
+        'Laravel\\Breeze\\BreezeServiceProvider' => __DIR__ . '/..' . '/laravel/breeze/src/BreezeServiceProvider.php',
+        'Laravel\\Breeze\\Console\\InstallCommand' => __DIR__ . '/..' . '/laravel/breeze/src/Console/InstallCommand.php',
+        'Laravel\\Breeze\\Console\\InstallsApiStack' => __DIR__ . '/..' . '/laravel/breeze/src/Console/InstallsApiStack.php',
+        'Laravel\\Breeze\\Console\\InstallsBladeStack' => __DIR__ . '/..' . '/laravel/breeze/src/Console/InstallsBladeStack.php',
+        'Laravel\\Breeze\\Console\\InstallsInertiaStacks' => __DIR__ . '/..' . '/laravel/breeze/src/Console/InstallsInertiaStacks.php',
+        'Laravel\\Breeze\\Console\\InstallsLivewireStack' => __DIR__ . '/..' . '/laravel/breeze/src/Console/InstallsLivewireStack.php',
         'Laravel\\Pail\\Console\\Commands\\PailCommand' => __DIR__ . '/..' . '/laravel/pail/src/Console/Commands/PailCommand.php',
         'Laravel\\Pail\\Contracts\\Printer' => __DIR__ . '/..' . '/laravel/pail/src/Contracts/Printer.php',
         'Laravel\\Pail\\File' => __DIR__ . '/..' . '/laravel/pail/src/File.php',
