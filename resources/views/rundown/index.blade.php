@@ -5,89 +5,90 @@
 @section('content')
 
 {{-- GRID UTAMA: Konten kiri + Sidebar kanan --}}
-<div class="flex flex-col lg:flex-row gap-5">
+<div class="flex flex-col lg:flex-row gap-5 items-start">
 
     {{-- ===== KOLOM KIRI ===== --}}
-    <div class="flex-1 min-w-0 space-y-5">
+    <div class="flex-1 min-w-0 space-y-5 w-full">
 
         {{-- HERO: Program Sedang Tayang --}}
-        <div class="relative rounded-2xl overflow-hidden shadow-xl" style="height: 220px;">
+        <div class="relative rounded-2xl overflow-hidden shadow-sm border border-blue-900/10 min-h-[210px] bg-[#0c2461]">
 
             {{-- Background utama: bannertop.png --}}
             <img src="{{ asset('images/backgrounds/bannertop.png') }}"
-                 alt="Banner"
-                 class="absolute inset-0 w-full h-full object-cover">
+                 alt="Banner Background"
+                 class="absolute inset-0 w-full h-full object-cover object-right">
 
-            {{-- Overlay gradient biru gelap di kiri --}}
-            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(0,20,80,0.92) 0%, rgba(0,40,120,0.80) 45%, rgba(0,50,140,0.30) 75%, transparent 100%);"></div>
+            {{-- Overlay gradient biru halus di sisi kiri agar teks kontras dan sisi kanan gedung TVRI tetap terlihat jelas --}}
+            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(12, 36, 97, 0.90) 0%, rgba(12, 36, 97, 0.78) 45%, rgba(12, 36, 97, 0.20) 70%, transparent 100%);"></div>
 
-            <div class="relative z-10 flex h-full items-stretch">
+            <div class="relative z-10 p-4 sm:p-5 flex flex-col md:flex-row items-center gap-4 sm:gap-5 h-full">
 
-                {{-- INFO KIRI --}}
-                <div class="flex-1 p-5 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1 live-pulse">
-                                <iconify-icon icon="heroicons:signal" width="12"></iconify-icon>
-                                SEDANG TAYANG
-                            </span>
-                            <span class="bg-white/20 backdrop-blur text-white text-xs font-semibold px-2.5 py-1 rounded-md">KALSEL</span>
-                        </div>
-                        <h1 id="hero-title" class="text-white text-3xl sm:text-4xl font-extrabold leading-tight drop-shadow-lg">
-                            HABAR BANUA
-                        </h1>
-                        <p class="text-blue-200 text-sm mt-1 font-medium">Kalimantan Selatan</p>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 text-white text-sm mb-1">
-                            <iconify-icon icon="heroicons:clock" width="15"></iconify-icon>
-                            <span id="hero-time" class="font-bold tracking-wide">09:01 - 10:00</span>
-                            <span class="w-2 h-2 bg-red-400 rounded-full live-pulse"></span>
-                            <span class="text-red-300 font-extrabold text-xs tracking-widest">LIVE</span>
-                        </div>
-                        <p class="text-blue-200 text-xs max-w-xs leading-relaxed">Menampilkan berita dan informasi terkini seputar Kalimantan Selatan</p>
-                    </div>
-                </div>
-
-                {{-- THUMBNAIL KANAN — tampil besar seperti konsep --}}
-                <div class="relative flex-shrink-0" style="width: 280px;">
-                    {{-- Gradient kiri agar menyatu dengan konten --}}
-                    <div class="absolute inset-y-0 left-0 w-16 z-10" style="background: linear-gradient(to right, rgba(0,40,120,0.6), transparent);"></div>
+                {{-- THUMBNAIL KIRI: Habar Banua Box --}}
+                <div class="w-full md:w-[240px] lg:w-[250px] h-[155px] sm:h-[170px] rounded-2xl overflow-hidden shadow-md border border-white/20 flex-shrink-0 bg-sky-400">
                     <img id="hero-thumbnail"
                          src="{{ asset('images/thumbnails/habarbanua.jpg') }}"
                          alt="Habar Banua"
                          class="w-full h-full object-cover">
                 </div>
+
+                {{-- INFO TENGAH --}}
+                <div class="flex-1 min-w-0 text-white flex flex-col justify-center max-w-md">
+                    {{-- Tag SEDANG TAYANG --}}
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold w-fit mb-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 inline-block"></span>
+                        SEDANG TAYANG
+                    </div>
+
+                    {{-- Judul Acara --}}
+                    <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-none mb-1">
+                        HABAR BANUA
+                    </h1>
+                    <p class="text-white/90 text-sm font-medium mb-3">
+                        Kalimantan Selatan
+                    </p>
+
+                    {{-- Waktu & Badge Live --}}
+                    <div class="flex items-center gap-2 mb-2">
+                        <iconify-icon icon="lucide:clock" class="text-white/90" width="16"></iconify-icon>
+                        <span id="hero-time" class="text-white font-bold text-sm tracking-wide">09:01 - 10:00</span>
+                        <span class="bg-[#d90429] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider live-pulse">LIVE</span>
+                    </div>
+
+                    {{-- Deskripsi --}}
+                    <p class="text-white/80 text-xs leading-relaxed">
+                        Menghadirkan informasi terkini seputar Kalimantan Selatan, dengan beragam berita dan kabar terbaru dari masyarakat Banua.
+                    </p>
+                </div>
             </div>
         </div>
 
         {{-- TABEL RUNDOWN --}}
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
 
             {{-- Header Tabel --}}
-            <div class="px-5 pt-5 pb-3 border-b border-gray-100">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-blue-600 flex-shrink-0">
+                        <iconify-icon icon="lucide:calendar-days" width="30"></iconify-icon>
+                    </div>
                     <div>
-                        <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
-                            <iconify-icon icon="heroicons:calendar-days" class="text-blue-700" width="20"></iconify-icon>
-                            Rundown Acara Hari Ini
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}</p>
+                        <h2 class="text-base font-bold text-slate-800 leading-tight">Rundown Acara Hari ini</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}</p>
                     </div>
+                </div>
 
-                    {{-- Filter Tabs --}}
-                    <div class="flex flex-wrap gap-1.5" id="filterTabs">
-                        @php
-                            $tabs = ['Semua', 'Nasional', 'Kalsel', 'Talkshow', 'Relay', 'Dokumenter'];
-                        @endphp
-                        @foreach($tabs as $tab)
-                            <button onclick="filterTab('{{ $tab }}')"
-                                    data-tab="{{ $tab }}"
-                                    class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-700 {{ $loop->first ? 'tab-active border-blue-900' : '' }}">
-                                {{ $tab }}
-                            </button>
-                        @endforeach
-                    </div>
+                {{-- Filter Tabs --}}
+                <div class="flex flex-wrap items-center gap-1.5" id="filterTabs">
+                    @php
+                        $tabs = ['Semua', 'Nasional', 'Kalsel', 'Talkshow', 'Religi', 'Dokumenter'];
+                    @endphp
+                    @foreach($tabs as $tab)
+                        <button onclick="filterTab('{{ $tab }}')"
+                                data-tab="{{ $tab }}"
+                                class="tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all {{ $loop->first ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600' }}">
+                            {{ $tab }}
+                        </button>
+                    @endforeach
                 </div>
             </div>
 
@@ -95,109 +96,198 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="bg-gray-50 border-b border-gray-100">
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 w-10">No</th>
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 w-24">Waktu</th>
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500">Mata Acara</th>
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 w-24">Channel</th>
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 w-20">Durasi</th>
-                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 w-28">Status</th>
+                        <tr class="bg-slate-50/70 border-b border-slate-100">
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-center w-10">No</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-left w-20">Waktu</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-left">Mata Acara</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-left w-20">Channel</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-left w-20">Durasi</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-left w-24">Info</th>
+                            <th class="py-2.5 px-3 text-xs font-semibold text-slate-500 text-center w-24">Status</th>
                         </tr>
                     </thead>
                     <tbody id="rundownTable">
-                        {{-- Data akan diisi dari Google Sheets API --}}
-                        {{-- Sementara tampilkan data dummy --}}
                         @php
                             $dummyData = [
-                                ['no' => 1,  'waktu' => '07:00', 'acara' => 'KLIK INDONESIA PAGI',     'thumbnail' => null,                    'channel' => 'Nasional', 'durasi' => '1:00:00', 'status' => 'sudah_tayang'],
-                                ['no' => 2,  'waktu' => '08:00', 'acara' => 'JENDELA NEGERI',           'thumbnail' => null,                    'channel' => 'Nasional', 'durasi' => '1:00:00', 'status' => 'sudah_tayang'],
-                                ['no' => 3,  'waktu' => '09:00', 'acara' => 'STING',                   'thumbnail' => null,                    'channel' => 'Kalsel',   'durasi' => '0:00:30', 'status' => 'sudah_tayang'],
-                                ['no' => 4,  'waktu' => '09:01', 'acara' => 'HABAR BANUA',             'thumbnail' => 'habarbanua.jpg',        'channel' => 'Kalsel',   'durasi' => '0:59:00', 'status' => 'on_air'],
-                                ['no' => 5,  'waktu' => '10:00', 'acara' => 'INI BORNEO',              'thumbnail' => 'ini_borneo_thumb.jpg',  'channel' => 'Kalsel',   'durasi' => '1:59:00', 'status' => 'menunggu'],
-                                ['no' => 6,  'waktu' => '12:00', 'acara' => 'SEBLAK SHOW',             'thumbnail' => null,                    'channel' => 'Nasional', 'durasi' => '1:00:00', 'status' => 'menunggu'],
-                                ['no' => 7,  'waktu' => '13:00', 'acara' => 'KLIK INDONESIA SIANG',    'thumbnail' => null,                    'channel' => 'Nasional', 'durasi' => '1:00:00', 'status' => 'menunggu'],
-                                ['no' => 8,  'waktu' => '14:00', 'acara' => 'TAPAL BATAS',             'thumbnail' => null,                    'channel' => 'Nasional', 'durasi' => '0:30:00', 'status' => 'menunggu'],
-                                ['no' => 9,  'waktu' => '15:00', 'acara' => 'PERSPEKTIF',              'thumbnail' => 'perspektif_thumb.jpg',  'channel' => 'Kalsel',   'durasi' => '0:59:00', 'status' => 'menunggu'],
-                                ['no' => 10, 'waktu' => '16:00', 'acara' => 'KALSEL HARI INI',         'thumbnail' => 'kalseltoday_thumb.jpg', 'channel' => 'Kalsel',   'durasi' => '0:59:00', 'status' => 'menunggu'],
-                                ['no' => 11, 'waktu' => '17:00', 'acara' => 'KAJIAN TAUHID',           'thumbnail' => 'kajian_thumb.jpg',      'channel' => 'Kalsel',   'durasi' => '0:59:00', 'status' => 'menunggu'],
-                                ['no' => 12, 'waktu' => '18:00', 'acara' => 'ADZAN MAGHRIB',           'thumbnail' => 'adzan_thumb.jpg',       'channel' => 'Kalsel',   'durasi' => '0:05:00', 'status' => 'menunggu'],
-                                ['no' => 13, 'waktu' => '18:05', 'acara' => 'MAWARUNG',                'thumbnail' => 'mawarung_thumb.jpg',    'channel' => 'Kalsel',   'durasi' => '0:55:00', 'status' => 'menunggu'],
+                                [
+                                    'no' => 1,
+                                    'waktu' => '09:01:00',
+                                    'acara' => 'HABAR BANUA',
+                                    'kategori' => 'Berita',
+                                    'thumbnail' => 'habarbanua.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:59:00',
+                                    'info' => 'ON AIR',
+                                    'status' => 'LIVE',
+                                    'status_type' => 'live'
+                                ],
+                                [
+                                    'no' => 2,
+                                    'waktu' => '10:00:30',
+                                    'acara' => 'INI BORNEO',
+                                    'kategori' => 'Wisata & Budaya',
+                                    'thumbnail' => 'ini_borneo_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:59:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'RELAY',
+                                    'status_type' => 'relay'
+                                ],
+                                [
+                                    'no' => 3,
+                                    'waktu' => '15:00:30',
+                                    'acara' => 'PERSPEKTIF',
+                                    'kategori' => 'Talkshow',
+                                    'thumbnail' => 'perspektif_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:59:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'RELAY',
+                                    'status_type' => 'relay'
+                                ],
+                                [
+                                    'no' => 4,
+                                    'waktu' => '17:00:00',
+                                    'acara' => 'KALSEL HARI INI',
+                                    'kategori' => 'Berita',
+                                    'thumbnail' => 'kalseltoday_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:30:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'LIVE',
+                                    'status_type' => 'live'
+                                ],
+                                [
+                                    'no' => 5,
+                                    'waktu' => '17:30:00',
+                                    'acara' => 'INSPIRASI INDONESIA',
+                                    'kategori' => 'Dokumenter',
+                                    'thumbnail' => 'inspirasiindo_thumb.PNG',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:15:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'RERUN',
+                                    'status_type' => 'rerun'
+                                ],
+                                [
+                                    'no' => 6,
+                                    'waktu' => '17:45:00',
+                                    'acara' => 'KAJIAN TAUHID',
+                                    'kategori' => 'Religi',
+                                    'thumbnail' => 'kajian_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:15:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'PLAYBACK',
+                                    'status_type' => 'playback'
+                                ],
+                                [
+                                    'no' => 7,
+                                    'waktu' => '18:00:00',
+                                    'acara' => 'ADZAN MAGHRIB',
+                                    'kategori' => 'Religi',
+                                    'thumbnail' => 'adzan_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:05:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'PLAYBACK',
+                                    'status_type' => 'playback'
+                                ],
+                                [
+                                    'no' => 8,
+                                    'waktu' => '18:05:00',
+                                    'acara' => 'KAJIAN TAUHID (LANJUTAN)',
+                                    'kategori' => 'Religi',
+                                    'thumbnail' => 'kajian_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:26:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'PLAYBACK',
+                                    'status_type' => 'playback'
+                                ],
+                                [
+                                    'no' => 9,
+                                    'waktu' => '18:31:00',
+                                    'acara' => 'PESONA INDONESIA - KALSEL',
+                                    'kategori' => 'Dokumenter',
+                                    'thumbnail' => 'pesonaindo_thumb.PNG',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:30:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'PLAYBACK',
+                                    'status_type' => 'playback'
+                                ],
+                                [
+                                    'no' => 10,
+                                    'waktu' => '19:01:00',
+                                    'acara' => 'MAWARUNG',
+                                    'kategori' => 'Talkshow',
+                                    'thumbnail' => 'mawarung_thumb.jpg',
+                                    'channel' => 'Kalsel',
+                                    'durasi' => '0:59:00',
+                                    'info' => 'MENUNGGU',
+                                    'status' => 'PLAYBACK',
+                                    'status_type' => 'playback'
+                                ],
                             ];
                         @endphp
 
                         @foreach($dummyData as $row)
-                            @php
-                                $isOnAir = $row['status'] === 'on_air';
-                                $isSudah = $row['status'] === 'sudah_tayang';
-                            @endphp
-                            <tr class="border-b border-gray-50 transition-colors hover:bg-blue-50/30 {{ $isOnAir ? 'bg-red-50 hover:bg-red-50' : '' }}"
-                                data-channel="{{ $row['channel'] }}">
+                            <tr class="border-b border-slate-100/80 hover:bg-blue-50/20 transition-colors"
+                                data-channel="{{ $row['channel'] }}"
+                                data-category="{{ $row['kategori'] }}">
+
                                 {{-- No --}}
-                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-400">{{ $row['no'] }}</td>
+                                <td class="px-3 py-2.5 text-center text-xs font-semibold text-slate-700">{{ $row['no'] }}</td>
 
                                 {{-- Waktu --}}
-                                <td class="px-4 py-3">
-                                    <span class="font-mono text-sm font-semibold {{ $isOnAir ? 'text-red-600' : 'text-gray-700' }}">
-                                        {{ $row['waktu'] }}
-                                    </span>
-                                </td>
+                                <td class="px-3 py-2.5 text-xs font-semibold text-slate-700 whitespace-nowrap">{{ $row['waktu'] }}</td>
 
                                 {{-- Mata Acara --}}
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-3">
-                                        {{-- Thumbnail --}}
+                                <td class="px-3 py-2.5">
+                                    <div class="flex items-center gap-2.5">
                                         @if($row['thumbnail'])
                                             <img src="{{ asset('images/thumbnails/' . $row['thumbnail']) }}"
                                                  alt="{{ $row['acara'] }}"
-                                                 class="w-10 h-10 rounded-lg object-cover flex-shrink-0 shadow-sm">
+                                                 class="w-10 h-6 sm:w-11 sm:h-7 rounded object-cover flex-shrink-0 shadow-xs border border-slate-200/50">
                                         @else
-                                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                                <iconify-icon icon="heroicons:tv" class="text-gray-300" width="18"></iconify-icon>
+                                            <div class="w-10 h-6 sm:w-11 sm:h-7 rounded bg-slate-100 flex items-center justify-center flex-shrink-0">
+                                                <iconify-icon icon="lucide:tv" class="text-slate-400" width="14"></iconify-icon>
                                             </div>
                                         @endif
                                         <div>
-                                            <p class="font-semibold text-gray-800 text-sm leading-tight">{{ $row['acara'] }}</p>
-                                            @if($isOnAir)
-                                                <span class="text-red-500 text-[10px] font-bold flex items-center gap-1">
-                                                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full live-pulse inline-block"></span>
-                                                    Sedang Tayang
-                                                </span>
-                                            @endif
+                                            <p class="font-bold text-slate-900 text-xs leading-tight">{{ $row['acara'] }}</p>
+                                            <p class="text-[11px] text-slate-400 font-normal leading-tight mt-0.5">{{ $row['kategori'] }}</p>
                                         </div>
                                     </div>
                                 </td>
 
                                 {{-- Channel --}}
-                                <td class="px-4 py-3">
-                                    <span class="text-xs font-medium px-2 py-1 rounded-md {{ $row['channel'] === 'Nasional' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' }}">
-                                        {{ $row['channel'] }}
-                                    </span>
-                                </td>
+                                <td class="px-3 py-2.5 text-xs font-medium text-slate-700">{{ $row['channel'] }}</td>
 
                                 {{-- Durasi --}}
-                                <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $row['durasi'] }}</td>
+                                <td class="px-3 py-2.5 text-xs text-slate-700 font-normal whitespace-nowrap">{{ $row['durasi'] }}</td>
+
+                                {{-- Info --}}
+                                <td class="px-3 py-2.5 text-xs font-bold text-slate-800 whitespace-nowrap">{{ $row['info'] }}</td>
 
                                 {{-- Status --}}
-                                <td class="px-4 py-3">
-                                    @if($row['status'] === 'on_air')
-                                        <span class="inline-flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full live-pulse">
-                                            <iconify-icon icon="heroicons:signal" width="11"></iconify-icon>
-                                            ON AIR
+                                <td class="px-3 py-2.5 text-center whitespace-nowrap">
+                                    @if($row['status_type'] === 'live')
+                                        <span class="inline-block bg-[#d90429] text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                            LIVE
                                         </span>
-                                    @elseif($row['status'] === 'sudah_tayang')
-                                        <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-500 text-xs font-semibold px-2.5 py-1 rounded-full">
-                                            <iconify-icon icon="heroicons:check-circle" width="11"></iconify-icon>
-                                            SELESAI
+                                    @elseif($row['status_type'] === 'relay')
+                                        <span class="inline-block bg-[#1d4ed8] text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                            RELAY
                                         </span>
-                                    @elseif($row['status'] === 'batal')
-                                        <span class="inline-flex items-center gap-1 bg-red-100 text-red-600 text-xs font-semibold px-2.5 py-1 rounded-full">
-                                            <iconify-icon icon="heroicons:x-circle" width="11"></iconify-icon>
-                                            BATAL
+                                    @elseif($row['status_type'] === 'rerun')
+                                        <span class="inline-block bg-[#eab308] text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                            RERUN
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-200">
-                                            <iconify-icon icon="heroicons:clock" width="11"></iconify-icon>
-                                            MENUNGGU
+                                        <span class="inline-block bg-[#16a34a] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                            PLAYBACK
                                         </span>
                                     @endif
                                 </td>
@@ -207,99 +297,120 @@
                 </table>
             </div>
 
-            {{-- Footer tabel --}}
-            <div class="px-5 py-3 border-t border-gray-50 bg-gray-50/50">
-                <p class="text-xs text-gray-400 flex items-center gap-1">
-                    <iconify-icon icon="heroicons:information-circle" width="13"></iconify-icon>
-                    Data jadwal diperbarui secara otomatis setiap hari. Jadwal dapat berubah sewaktu-waktu.
-                </p>
+            {{-- Footer / Pagination Dots di bawah tabel --}}
+            <div class="pt-4 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
             </div>
         </div>
     </div>
 
     {{-- ===== SIDEBAR KANAN ===== --}}
-    <div class="w-full lg:w-72 xl:w-80 space-y-4 flex-shrink-0">
+    <div class="w-full lg:w-[300px] xl:w-[320px] space-y-4 flex-shrink-0">
 
-        {{-- Program Berikutnya --}}
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="px-4 pt-4 pb-2 border-b border-gray-100">
-                <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                    <iconify-icon icon="heroicons:queue-list" class="text-blue-700" width="18"></iconify-icon>
-                    Program Berikutnya
-                </h3>
+        {{-- Card 1: Program Berikutnya --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+            <div class="flex items-center gap-2 mb-3">
+                <iconify-icon icon="lucide:clock" class="text-blue-700" width="16"></iconify-icon>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">PROGRAM BERIKUTNYA</h3>
             </div>
-            <div class="divide-y divide-gray-50">
+            <div class="space-y-3">
                 @php
                     $nextPrograms = [
-                        ['waktu' => '10:00', 'acara' => 'INI BORNEO',      'thumbnail' => 'ini_borneo_thumb.jpg',  'channel' => 'Kalsel'],
-                        ['waktu' => '15:00', 'acara' => 'PERSPEKTIF',      'thumbnail' => 'perspektif_thumb.jpg',  'channel' => 'Kalsel'],
-                        ['waktu' => '16:00', 'acara' => 'KALSEL HARI INI', 'thumbnail' => 'kalseltoday_thumb.jpg', 'channel' => 'Kalsel'],
-                        ['waktu' => '17:00', 'acara' => 'KAJIAN TAUHID',   'thumbnail' => 'kajian_thumb.jpg',      'channel' => 'Kalsel'],
-                        ['waktu' => '18:00', 'acara' => 'ADZAN MAGHRIB',   'thumbnail' => 'adzan_thumb.jpg',       'channel' => 'Kalsel'],
+                        ['waktu' => '10:00:30', 'acara' => 'INI BORNEO',      'kategori' => 'Wisata & Budaya', 'thumbnail' => 'ini_borneo_thumb.jpg'],
+                        ['waktu' => '15:00:30', 'acara' => 'PERSPEKTIF',      'kategori' => 'Talkshow',        'thumbnail' => 'perspektif_thumb.jpg'],
+                        ['waktu' => '17:00:00', 'acara' => 'KALSEL HARI INI', 'kategori' => 'Berita',          'thumbnail' => 'kalseltoday_thumb.jpg'],
+                        ['waktu' => '18:00:00', 'acara' => 'KAJIAN TAUHID',   'kategori' => 'Religi',          'thumbnail' => 'kajian_thumb.jpg'],
+                        ['waktu' => '18:00:00', 'acara' => 'ADZAN MAGHRIB',   'kategori' => 'Religi',          'thumbnail' => 'adzan_thumb.jpg'],
                     ];
                 @endphp
                 @foreach($nextPrograms as $prog)
-                    <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <img src="{{ asset('images/thumbnails/' . $prog['thumbnail']) }}"
-                             alt="{{ $prog['acara'] }}"
-                             class="w-12 h-12 rounded-xl object-cover flex-shrink-0 shadow-sm">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-gray-800 truncate">{{ $prog['acara'] }}</p>
-                            <p class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
-                                <iconify-icon icon="heroicons:clock" width="11"></iconify-icon>
-                                {{ $prog['waktu'] }} WIB
-                            </p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-14 h-9 rounded-lg overflow-hidden flex-shrink-0 shadow-xs border border-slate-100">
+                            <img src="{{ asset('images/thumbnails/' . $prog['thumbnail']) }}"
+                                 alt="{{ $prog['acara'] }}"
+                                 class="w-full h-full object-cover">
                         </div>
-                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded {{ $prog['channel'] === 'Nasional' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600' }} flex-shrink-0">
-                            {{ $prog['channel'] }}
-                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[11px] text-slate-400 font-medium leading-none mb-1">{{ $prog['waktu'] }}</p>
+                            <p class="text-xs font-extrabold text-[#1e3a8a] leading-tight truncate">{{ $prog['acara'] }}</p>
+                            <p class="text-[10px] text-slate-400 leading-none mt-1">{{ $prog['kategori'] }}</p>
+                        </div>
                     </div>
                 @endforeach
             </div>
         </div>
 
-        {{-- Statistik Siaran --}}
-        <div class="bg-white rounded-2xl shadow-sm p-4">
-            <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2 mb-3">
-                <iconify-icon icon="heroicons:chart-bar" class="text-blue-700" width="18"></iconify-icon>
-                Statistik Siaran
-            </h3>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-blue-50 rounded-xl p-3 text-center">
-                    <iconify-icon icon="heroicons:tv" class="text-blue-600 mx-auto" width="22"></iconify-icon>
-                    <p class="text-2xl font-extrabold text-blue-700 mt-1">{{ count($dummyData) }}</p>
-                    <p class="text-[11px] text-blue-500 font-medium">Total Acara</p>
+        {{-- Card 2: Statistik Siaran --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+            <div class="flex items-center gap-2 mb-3">
+                <iconify-icon icon="lucide:bar-chart-2" class="text-blue-700" width="16"></iconify-icon>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">STATISTIK SIARAN</h3>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                {{-- Total Acara --}}
+                <div class="bg-[#eff6ff] border border-blue-100/70 rounded-xl p-2.5 flex items-center justify-between">
+                    <iconify-icon icon="lucide:tv" class="text-[#0066ff]" width="26"></iconify-icon>
+                    <div class="text-right">
+                        <span class="text-[10px] font-semibold text-blue-600 block leading-tight">Total Acara</span>
+                        <span class="text-xl font-extrabold text-[#0066ff] leading-none">8</span>
+                    </div>
                 </div>
-                <div class="bg-red-50 rounded-xl p-3 text-center">
-                    <iconify-icon icon="heroicons:signal" class="text-red-500 mx-auto live-pulse" width="22"></iconify-icon>
-                    <p class="text-2xl font-extrabold text-red-600 mt-1">1</p>
-                    <p class="text-[11px] text-red-400 font-medium">Live Sekarang</p>
+
+                {{-- Live --}}
+                <div class="bg-[#fff1f2] border border-red-100/70 rounded-xl p-2.5 flex items-center justify-between">
+                    <iconify-icon icon="lucide:radio" class="text-[#e11d48] live-pulse" width="26"></iconify-icon>
+                    <div class="text-right">
+                        <span class="text-[10px] font-semibold text-red-600 block leading-tight">Live</span>
+                        <span class="text-xl font-extrabold text-[#e11d48] leading-none">2</span>
+                    </div>
                 </div>
-                <div class="bg-amber-50 rounded-xl p-3 text-center">
-                    <iconify-icon icon="heroicons:clock" class="text-amber-500 mx-auto" width="22"></iconify-icon>
-                    <p class="text-2xl font-extrabold text-amber-600 mt-1">10</p>
-                    <p class="text-[11px] text-amber-400 font-medium">Menunggu</p>
+
+                {{-- Selesai --}}
+                <div class="bg-[#f0fdf4] border border-green-100/70 rounded-xl p-2.5 flex items-center justify-between">
+                    <iconify-icon icon="lucide:check-circle-2" class="text-[#16a34a]" width="26"></iconify-icon>
+                    <div class="text-right">
+                        <span class="text-[10px] font-semibold text-green-600 block leading-tight">Selesai</span>
+                        <span class="text-xl font-extrabold text-[#16a34a] leading-none">3</span>
+                    </div>
                 </div>
-                <div class="bg-green-50 rounded-xl p-3 text-center">
-                    <iconify-icon icon="heroicons:check-circle" class="text-green-500 mx-auto" width="22"></iconify-icon>
-                    <p class="text-2xl font-extrabold text-green-600 mt-1">3</p>
-                    <p class="text-[11px] text-green-400 font-medium">Selesai</p>
+
+                {{-- Menunggu --}}
+                <div class="bg-[#fffbeb] border border-amber-100/70 rounded-xl p-2.5 flex items-center justify-between">
+                    <iconify-icon icon="lucide:clock" class="text-[#d97706]" width="26"></iconify-icon>
+                    <div class="text-right">
+                        <span class="text-[10px] font-semibold text-amber-600 block leading-tight">Menunggu</span>
+                        <span class="text-xl font-extrabold text-[#d97706] leading-none">5</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        {{-- Banner TVRI Kalsel --}}
-        <div class="rounded-2xl overflow-hidden shadow-sm relative h-36"
-             style="background: linear-gradient(135deg, #001f5b, #003d99);">
-            <img src="{{ asset('images/backgrounds/mainbg2.png') }}"
-                 alt="TVRI Kalsel"
-                 class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity">
-            <div class="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
-                <img src="{{ asset('images/logo/logowhite.png') }}" alt="TVRI" class="h-8 w-auto mb-2">
-                <p class="text-white text-xs font-semibold">Melayani Informasi</p>
-                <p class="text-blue-200 text-xs">untuk Negeri</p>
+        {{-- Card 3: Banner TVRI Kalsel --}}
+        <div class="rounded-2xl overflow-hidden shadow-sm relative h-36 bg-gradient-to-r from-[#0038a8] via-[#004dc9] to-[#002673] flex items-center justify-between p-4">
+            {{-- Soft glow overlay --}}
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-blue-300/20 via-transparent to-transparent pointer-events-none"></div>
+
+            {{-- Sisi Kiri Teks --}}
+            <div class="relative z-10 flex flex-col justify-center h-full max-w-[50%]">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <img src="{{ asset('images/logo/logowhite.png') }}" alt="TVRI" style="height: 22px; width: auto; object-fit: contain;">
+                    <span class="text-white font-extrabold text-sm tracking-wider">KALSEL</span>
+                </div>
+                <p class="text-white text-xs sm:text-sm font-bold leading-tight">Melayani Informasi</p>
+                <p class="text-cyan-200 text-xs sm:text-sm font-semibold leading-tight mt-0.5">untuk Negeri</p>
+            </div>
+
+            {{-- Sisi Kanan Rumah Banjar --}}
+            <div class="absolute right-0 top-0 bottom-0 w-[52%] overflow-hidden">
+                <div class="absolute inset-y-0 left-0 w-12 z-10 bg-gradient-to-r from-[#004dc9] to-transparent"></div>
+                <img src="{{ asset('images/backgrounds/banjar_house.jpg') }}" alt="TVRI Kalsel" class="w-full h-full object-cover object-center">
             </div>
         </div>
+
     </div>
 </div>
 
@@ -311,22 +422,32 @@
     function filterTab(tab) {
         // Update tab active state
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('tab-active', 'border-blue-900');
-            btn.classList.add('border-gray-200', 'text-gray-600');
+            btn.classList.remove('bg-[#0066ff]', 'text-white', 'shadow-xs');
+            btn.classList.add('text-slate-600');
         });
         const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
-        activeBtn.classList.add('tab-active', 'border-blue-900');
-        activeBtn.classList.remove('border-gray-200', 'text-gray-600');
+        if (activeBtn) {
+            activeBtn.classList.add('bg-[#0066ff]', 'text-white', 'shadow-xs');
+            activeBtn.classList.remove('text-slate-600');
+        }
 
         // Filter rows
         const rows = document.querySelectorAll('#rundownTable tr');
         rows.forEach(row => {
             const channel = row.getAttribute('data-channel');
+            const category = row.getAttribute('data-category');
+
             if (tab === 'Semua') {
                 row.style.display = '';
             } else if (tab === 'Nasional' && channel === 'Nasional') {
                 row.style.display = '';
             } else if (tab === 'Kalsel' && channel === 'Kalsel') {
+                row.style.display = '';
+            } else if (tab === 'Talkshow' && category && category.toLowerCase().includes('talkshow')) {
+                row.style.display = '';
+            } else if (tab === 'Religi' && category && category.toLowerCase().includes('religi')) {
+                row.style.display = '';
+            } else if (tab === 'Dokumenter' && category && category.toLowerCase().includes('dokumenter')) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
