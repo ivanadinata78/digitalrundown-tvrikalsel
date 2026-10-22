@@ -57,7 +57,7 @@
                     <span>Beranda</span>
                     <span class="absolute -bottom-2.5 left-0 right-0 h-[2.5px] bg-blue-600 rounded-full"></span>
                 </a>
-                <a href="#" class="flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 transition">
+                <a href="https://tvri.go.id/saluran/tvri-kalimantan-selatan" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 transition">
                     <span>Live TV</span>
                     <span class="bg-[#d90429] text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full live-pulse tracking-wider">LIVE</span>
                 </a>
