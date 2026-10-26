@@ -26,8 +26,8 @@
                 {{-- THUMBNAIL KIRI: Habar Banua Box --}}
                 <div class="w-full md:w-[240px] lg:w-[250px] h-[155px] sm:h-[170px] rounded-2xl overflow-hidden shadow-md border border-white/20 flex-shrink-0 bg-sky-400">
                     <img id="hero-thumbnail"
-                         src="{{ asset('images/thumbnails/habarbanua.jpg') }}"
-                         alt="Habar Banua"
+                         src="{{ asset('images/thumbnails/' . ($currentOnAir['thumbnail'] ?? 'habarbanua.jpg')) }}"
+                         alt="{{ $currentOnAir['acara'] ?? 'Habar Banua' }}"
                          class="w-full h-full object-cover">
                 </div>
 
@@ -35,28 +35,30 @@
                 <div class="flex-1 min-w-0 text-white flex flex-col justify-center max-w-md">
                     {{-- Tag SEDANG TAYANG --}}
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold w-fit mb-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 inline-block"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 inline-block animate-pulse"></span>
                         SEDANG TAYANG
                     </div>
 
                     {{-- Judul Acara --}}
                     <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-none mb-1">
-                        HABAR BANUA
+                        {{ $currentOnAir['acara'] ?? 'HABAR BANUA' }}
                     </h1>
                     <p class="text-white/90 text-sm font-medium mb-3">
-                        Kalimantan Selatan
+                        {{ $currentOnAir['kategori'] ?? 'Kalimantan Selatan' }}
                     </p>
 
                     {{-- Waktu & Badge Live --}}
                     <div class="flex items-center gap-2 mb-2">
                         <iconify-icon icon="lucide:clock" class="text-white/90" width="16"></iconify-icon>
-                        <span id="hero-time" class="text-white font-bold text-sm tracking-wide">09:01 - 10:00</span>
-                        <span class="bg-[#d90429] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider live-pulse">LIVE</span>
+                        <span id="hero-time" class="text-white font-bold text-sm tracking-wide">{{ $currentOnAir['waktu'] ?? '09:01 - 10:00' }}</span>
+                        @if(($currentOnAir['status_type'] ?? '') === 'live')
+                            <span class="bg-[#d90429] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider live-pulse">LIVE</span>
+                        @endif
                     </div>
 
                     {{-- Deskripsi --}}
                     <p class="text-white/80 text-xs leading-relaxed">
-                        Menghadirkan informasi terkini seputar Kalimantan Selatan, dengan beragam berita dan kabar terbaru dari masyarakat Banua.
+                        {{ $currentOnAir['description'] ?? 'Menghadirkan informasi terkini seputar Kalimantan Selatan, dengan beragam berita dan kabar terbaru dari masyarakat Banua.' }}
                     </p>
                 </div>
             </div>
@@ -230,9 +232,10 @@
                                     'status_type' => 'playback'
                                 ],
                             ];
+                            $tableData = $programs ?? $dummyData;
                         @endphp
 
-                        @foreach($dummyData as $row)
+                        @foreach($tableData as $row)
                             <tr class="border-b border-slate-100/80 hover:bg-blue-50/20 transition-colors"
                                 data-channel="{{ $row['channel'] }}"
                                 data-category="{{ $row['kategori'] }}">
