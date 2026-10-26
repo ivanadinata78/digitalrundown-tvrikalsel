@@ -13,22 +13,15 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            // Siaran langsung - merah
-            ['name' => 'LIVE',     'color_hex' => '#EF4444', 'icon' => 'signal'],
-            // Relay dari pusat - biru
-            ['name' => 'RELAY',    'color_hex' => '#3B82F6', 'icon' => 'broadcast'],
-            // Pemutaran ulang rekaman - abu-abu
-            ['name' => 'PLAYBACK', 'color_hex' => '#6B7280', 'icon' => 'play-circle'],
-            // Tayang ulang episode lama - kuning
-            ['name' => 'RERUN',    'color_hex' => '#F59E0B', 'icon' => 'refresh'],
-            // Public Service Announcement - hijau
-            ['name' => 'PSA',      'color_hex' => '#10B981', 'icon' => 'speakerphone'],
-            // Bumper/jeda antar acara - ungu
-            ['name' => 'STING',    'color_hex' => '#8B5CF6', 'icon' => 'film'],
+            ['name' => 'Berita',          'color_hex' => '#EF4444', 'icon' => 'newspaper'],
+            ['name' => 'Wisata & Budaya', 'color_hex' => '#3B82F6', 'icon' => 'globe'],
+            ['name' => 'Talkshow',        'color_hex' => '#8B5CF6', 'icon' => 'microphone'],
+            ['name' => 'Dokumenter',      'color_hex' => '#10B981', 'icon' => 'film'],
+            ['name' => 'Religi',          'color_hex' => '#F59E0B', 'icon' => 'sparkles'],
         ];
 
         foreach ($categories as $category) {
-            Category::create($category);
+            Category::firstOrCreate(['name' => $category['name']], $category);
         }
     }
 }
