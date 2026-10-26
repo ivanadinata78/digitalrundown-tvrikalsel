@@ -13,22 +13,26 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Akun Admin utama
-        User::create([
-            'name'      => 'Administrator',
-            'email'     => 'admin@tvri-kalsel.com',
-            'password'  => Hash::make('admin123'),
-            'role'      => 'admin',
-            'is_active' => true,
-        ]);
+        // Akun Super Administrator utama
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name'      => 'Super Administrator',
+                'password'  => Hash::make('admin123'),
+                'role'      => 'admin',
+                'is_active' => true,
+            ]
+        );
 
         // Akun Karyawan contoh
-        User::create([
-            'name'      => 'Karyawan TVRI',
-            'email'     => 'karyawan@tvri-kalsel.com',
-            'password'  => Hash::make('karyawan123'),
-            'role'      => 'karyawan',
-            'is_active' => true,
-        ]);
+        User::updateOrCreate(
+            ['username' => 'karyawan'],
+            [
+                'name'      => 'Karyawan TVRI',
+                'password'  => Hash::make('karyawan123'),
+                'role'      => 'karyawan',
+                'is_active' => true,
+            ]
+        );
     }
 }
