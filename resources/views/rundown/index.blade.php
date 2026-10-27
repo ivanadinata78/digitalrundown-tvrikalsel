@@ -94,6 +94,32 @@
                 </div>
             </div>
 
+            {{-- Toolbar: Searchbar Acara Rundown --}}
+            <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100">
+                <div class="relative w-full sm:w-72" style="max-width: 300px;">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <iconify-icon icon="heroicons:magnifying-glass-solid" width="16"></iconify-icon>
+                    </div>
+                    <input type="text"
+                           id="rundownSearchInput"
+                           placeholder="Cari acara siaran..."
+                           class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition-all text-slate-800 placeholder-slate-400"
+                           style="padding-left: 36px !important; padding-right: 32px !important; padding-top: 7px; padding-bottom: 7px;"
+                           oninput="filterRundown()">
+                    <button type="button"
+                            id="clearRundownSearchBtn"
+                            onclick="clearRundownSearch()"
+                            class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer">
+                        <iconify-icon icon="heroicons:x-circle-solid" width="16"></iconify-icon>
+                    </button>
+                </div>
+
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5 shrink-0">
+                    <iconify-icon icon="heroicons:information-circle-solid" width="15" class="text-blue-500"></iconify-icon>
+                    <span>Jadwal siaran dapat berubah sewaktu-waktu.</span>
+                </div>
+            </div>
+
             {{-- Tabel --}}
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -236,9 +262,10 @@
                         @endphp
 
                         @foreach($tableData as $row)
-                            <tr class="border-b border-slate-100/80 hover:bg-blue-50/20 transition-colors"
+                            <tr class="rundown-row border-b border-slate-100/80 hover:bg-blue-50/20 transition-colors"
                                 data-channel="{{ $row['channel'] }}"
-                                data-category="{{ $row['kategori'] }}">
+                                data-category="{{ $row['kategori'] }}"
+                                data-title="{{ $row['acara'] }}">
 
                                 {{-- No --}}
                                 <td class="px-3 py-2.5 text-center text-xs font-semibold text-slate-700">{{ $row['no'] }}</td>
@@ -296,6 +323,16 @@
                                 </td>
                             </tr>
                         @endforeach
+                        {{-- Baris Pesan Kosong Saat Hasil Pencarian Tidak Ditemukan --}}
+                        <tr id="emptyRundownSearchRow" class="hidden">
+                            <td colspan="7" class="py-12 px-4 text-center">
+                                <div class="flex flex-col items-center justify-center text-slate-400">
+                                    <iconify-icon icon="heroicons:magnifying-glass" width="36" class="text-slate-300 mb-2"></iconify-icon>
+                                    <p class="font-bold text-slate-600 text-sm">Tidak ada jadwal acara yang cocok</p>
+                                    <p class="text-xs text-slate-400 mt-1">Coba gunakan kata kunci pencarian lain atau pilih tab filter lain</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -421,8 +458,12 @@
 
 @push('scripts')
 <script>
+    let currentRundownFilterTab = 'Semua';
+
     // Filter tab functionality
     function filterTab(tab) {
+        currentRundownFilterTab = tab;
+
         // Update tab active state
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('bg-[#0066ff]', 'text-white', 'shadow-xs');
@@ -434,28 +475,86 @@
             activeBtn.classList.remove('text-slate-600');
         }
 
-        // Filter rows
-        const rows = document.querySelectorAll('#rundownTable tr');
-        rows.forEach(row => {
-            const channel = row.getAttribute('data-channel');
-            const category = row.getAttribute('data-category');
+        // Terapkan filter gabungan
+        filterRundown();
+    }
 
-            if (tab === 'Semua') {
+    // Filter pencarian real-time + tab kategori pada tabel rundown siaran
+    function filterRundown() {
+        const searchInput = document.getElementById('rundownSearchInput');
+        const clearBtn = document.getElementById('clearRundownSearchBtn');
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+        // Tampilkan/sembunyikan tombol clear (X)
+        if (clearBtn) {
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        const rows = document.querySelectorAll('#rundownTable tr.rundown-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const channel  = (row.getAttribute('data-channel') || '').toLowerCase();
+            const category = (row.getAttribute('data-category') || '').toLowerCase();
+            const title    = (row.getAttribute('data-title') || '').toLowerCase();
+            const rowText  = (row.textContent || '').toLowerCase();
+
+            // 1. Cek kesesuaian Tab Kategori
+            let matchTab = false;
+            if (currentRundownFilterTab === 'Semua') {
+                matchTab = true;
+            } else if (currentRundownFilterTab === 'Nasional' && channel === 'nasional') {
+                matchTab = true;
+            } else if (currentRundownFilterTab === 'Kalsel' && channel === 'kalsel') {
+                matchTab = true;
+            } else if (currentRundownFilterTab === 'Talkshow' && category.includes('talkshow')) {
+                matchTab = true;
+            } else if (currentRundownFilterTab === 'Religi' && category.includes('religi')) {
+                matchTab = true;
+            } else if (currentRundownFilterTab === 'Dokumenter' && category.includes('dokumenter')) {
+                matchTab = true;
+            }
+
+            // 2. Cek kesesuaian Kata Kunci Pencarian
+            let matchSearch = true;
+            if (query.length > 0) {
+                matchSearch = title.includes(query) ||
+                              category.includes(query) ||
+                              channel.includes(query) ||
+                              rowText.includes(query);
+            }
+
+            if (matchTab && matchSearch) {
                 row.style.display = '';
-            } else if (tab === 'Nasional' && channel === 'Nasional') {
-                row.style.display = '';
-            } else if (tab === 'Kalsel' && channel === 'Kalsel') {
-                row.style.display = '';
-            } else if (tab === 'Talkshow' && category && category.toLowerCase().includes('talkshow')) {
-                row.style.display = '';
-            } else if (tab === 'Religi' && category && category.toLowerCase().includes('religi')) {
-                row.style.display = '';
-            } else if (tab === 'Dokumenter' && category && category.toLowerCase().includes('dokumenter')) {
-                row.style.display = '';
+                visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
+
+        // Tampilkan/sembunyikan baris pesan kosong
+        const emptyRow = document.getElementById('emptyRundownSearchRow');
+        if (emptyRow) {
+            if (visibleCount === 0) {
+                emptyRow.classList.remove('hidden');
+            } else {
+                emptyRow.classList.add('hidden');
+            }
+        }
+    }
+
+    // Reset kolom pencarian rundown
+    function clearRundownSearch() {
+        const searchInput = document.getElementById('rundownSearchInput');
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+        }
+        filterRundown();
     }
 </script>
 @endpush

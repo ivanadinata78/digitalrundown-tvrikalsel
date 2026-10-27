@@ -16,7 +16,7 @@
                         {{-- Beranda --}}
                         <a href="{{ route('admin.dashboard') }}"
                            class="relative py-5 flex items-center gap-1.5 text-sm font-bold transition-all {{ request()->routeIs('admin.dashboard') ? 'text-blue-600 font-extrabold' : 'text-slate-600 hover:text-blue-600' }}">
-                            <iconify-icon icon="heroicons:home-solid" width="17" class="text-blue-600"></iconify-icon>
+                            <iconify-icon icon="heroicons:home-solid" width="17"></iconify-icon>
                             <span>Beranda</span>
                             @if(request()->routeIs('admin.dashboard'))
                                 <span class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-blue-600 rounded-full"></span>

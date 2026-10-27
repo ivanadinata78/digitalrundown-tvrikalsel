@@ -129,17 +129,39 @@
                         <button type="button"
                                 onclick="applyProgramFilter('{{ $tab }}')"
                                 data-tab="{{ $tab }}"
-                                class="prog-tab-btn px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ $tab === 'Kalsel' ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50' }}">
+                                class="prog-tab-btn px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ $tab === 'Semua' ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50' }}">
                             {{ $tab }}
                         </button>
                     @endforeach
                 </div>
             </div>
 
-            {{-- Petunjuk Klik Acara --}}
-            <div class="py-2 text-[11px] text-slate-400 flex items-center gap-1.5">
-                <iconify-icon icon="heroicons:cursor-arrow-rays" width="14" class="text-blue-500"></iconify-icon>
-                <span>Klik salah satu baris acara pada tabel di bawah untuk melihat dan mengedit detailnya.</span>
+            {{-- Toolbar: Searchbar & Petunjuk --}}
+            <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {{-- Searchbar Input --}}
+                <div class="relative w-full sm:w-72" style="max-width: 300px;">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <iconify-icon icon="heroicons:magnifying-glass-solid" width="16"></iconify-icon>
+                    </div>
+                    <input type="text"
+                           id="adminProgramSearch"
+                           placeholder="Cari acara..."
+                           class="w-full text-xs bg-slate-50/90 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition-all text-slate-800 placeholder-slate-400"
+                           style="padding-left: 36px !important; padding-right: 32px !important; padding-top: 7px; padding-bottom: 7px;"
+                           oninput="filterAdminPrograms()">
+                    <button type="button"
+                            id="clearAdminSearchBtn"
+                            onclick="clearAdminProgramSearch()"
+                            class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer">
+                        <iconify-icon icon="heroicons:x-circle-solid" width="16"></iconify-icon>
+                    </button>
+                </div>
+
+                {{-- Petunjuk Klik Acara --}}
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5 shrink-0">
+                    <iconify-icon icon="heroicons:cursor-arrow-rays" width="14" class="text-blue-500"></iconify-icon>
+                    <span>Klik baris acara untuk mengedit detailnya.</span>
+                </div>
             </div>
 
             {{-- Tabel Data Acara --}}
@@ -225,6 +247,16 @@
                                 </td>
                             </tr>
                         @endforeach
+                        {{-- Baris Pesan Kosong Saat Hasil Pencarian Tidak Ditemukan --}}
+                        <tr id="emptySearchRow" class="hidden">
+                            <td colspan="7" class="py-12 px-4 text-center">
+                                <div class="flex flex-col items-center justify-center text-slate-400">
+                                    <iconify-icon icon="heroicons:magnifying-glass" width="36" class="text-slate-300 mb-2"></iconify-icon>
+                                    <p class="font-bold text-slate-600 text-sm">Tidak ada acara yang cocok</p>
+                                    <p class="text-xs text-slate-400 mt-1">Coba gunakan kata kunci pencarian lain atau pilih tab filter lain</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -425,8 +457,12 @@
         }
     }
 
+    let currentAdminFilterTab = 'Semua';
+
     // Filter tab (Semua, Nasional, Kalsel, Talkshow, Religi, Dokumenter)
     function applyProgramFilter(tab) {
+        currentAdminFilterTab = tab;
+
         // Update tab style
         document.querySelectorAll('.prog-tab-btn').forEach(btn => {
             btn.classList.remove('bg-[#0066ff]', 'text-white', 'shadow-xs');
@@ -438,28 +474,88 @@
             activeBtn.classList.remove('text-slate-600');
         }
 
-        // Filter baris
-        const rows = document.querySelectorAll('#adminProgramsTable tr');
+        // Terapkan filter gabungan (tab + search)
+        filterAdminPrograms();
+    }
+
+    // Filter pencarian real-time + tab kategori pada tabel acara admin
+    function filterAdminPrograms() {
+        const searchInput = document.getElementById('adminProgramSearch');
+        const clearBtn = document.getElementById('clearAdminSearchBtn');
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+        // Tampilkan/sembunyikan tombol clear (X)
+        if (clearBtn) {
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        const rows = document.querySelectorAll('#adminProgramsTable tr.program-row');
+        let visibleCount = 0;
+
         rows.forEach(row => {
             const channel  = (row.getAttribute('data-channel') || '').toLowerCase();
             const category = (row.getAttribute('data-category') || '').toLowerCase();
+            const title    = (row.getAttribute('data-title') || '').toLowerCase();
+            const time     = (row.getAttribute('data-time') || '').toLowerCase();
+            const rowText  = (row.textContent || '').toLowerCase();
 
-            if (tab === 'Semua') {
+            // 1. Cek kesesuaian Tab Kategori
+            let matchTab = false;
+            if (currentAdminFilterTab === 'Semua') {
+                matchTab = true;
+            } else if (currentAdminFilterTab === 'Nasional' && channel === 'nasional') {
+                matchTab = true;
+            } else if (currentAdminFilterTab === 'Kalsel' && channel === 'kalsel') {
+                matchTab = true;
+            } else if (currentAdminFilterTab === 'Talkshow' && category.includes('talkshow')) {
+                matchTab = true;
+            } else if (currentAdminFilterTab === 'Religi' && category.includes('religi')) {
+                matchTab = true;
+            } else if (currentAdminFilterTab === 'Dokumenter' && category.includes('dokumenter')) {
+                matchTab = true;
+            }
+
+            // 2. Cek kesesuaian Kata Kunci Pencarian (Mata Acara, Kategori, Channel, Waktu)
+            let matchSearch = true;
+            if (query.length > 0) {
+                matchSearch = title.includes(query) ||
+                              category.includes(query) ||
+                              channel.includes(query) ||
+                              time.includes(query) ||
+                              rowText.includes(query);
+            }
+
+            if (matchTab && matchSearch) {
                 row.style.display = '';
-            } else if (tab === 'Nasional' && channel === 'nasional') {
-                row.style.display = '';
-            } else if (tab === 'Kalsel' && channel === 'kalsel') {
-                row.style.display = '';
-            } else if (tab === 'Talkshow' && category.includes('talkshow')) {
-                row.style.display = '';
-            } else if (tab === 'Religi' && category.includes('religi')) {
-                row.style.display = '';
-            } else if (tab === 'Dokumenter' && category.includes('dokumenter')) {
-                row.style.display = '';
+                visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
+
+        // Tampilkan/sembunyikan baris empty state
+        const emptyRow = document.getElementById('emptySearchRow');
+        if (emptyRow) {
+            if (visibleCount === 0) {
+                emptyRow.classList.remove('hidden');
+            } else {
+                emptyRow.classList.add('hidden');
+            }
+        }
+    }
+
+    // Reset kolom pencarian
+    function clearAdminProgramSearch() {
+        const searchInput = document.getElementById('adminProgramSearch');
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+        }
+        filterAdminPrograms();
     }
 
     // AJAX Form Submit untuk update detail acara secara instan dan mulus
