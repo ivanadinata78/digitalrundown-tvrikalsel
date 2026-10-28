@@ -27,10 +27,10 @@ class Category extends Model
     }
 
     /**
-     * Relasi ke tabel programs (satu kategori punya banyak program).
+     * Relasi ke tabel program_details (satu kategori punya banyak program).
      */
     public function programs(): HasMany
     {
-        return $this->hasMany(Program::class);
+        return $this->hasMany(ProgramDetail::class, 'category', 'name');
     }
 }

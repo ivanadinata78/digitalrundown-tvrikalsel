@@ -44,6 +44,7 @@ Route::middleware(['karyawan', 'admin'])->prefix('admin')->name('admin.')->group
     // Manajemen Kategori Acara
     Route::get('/kategori', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/kategori', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('/kategori/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/kategori/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
     // Manajemen Pengguna Internal TVRI Kalsel

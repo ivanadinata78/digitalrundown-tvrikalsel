@@ -15,7 +15,8 @@ class RundownController extends Controller
     {
         $programs = ProgramDetail::getProgramsWithDetails();
         $currentOnAir = ProgramDetail::getCurrentOnAir($programs);
+        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
 
-        return view('rundown.index', compact('programs', 'currentOnAir'));
+        return view('rundown.index', compact('programs', 'currentOnAir', 'categories'));
     }
 }

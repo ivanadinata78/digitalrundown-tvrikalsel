@@ -171,10 +171,11 @@ class DashboardController extends Controller
         $programs = ProgramDetail::getProgramsWithDetails();
         $currentOnAir = ProgramDetail::getCurrentOnAir($programs);
 
-        // Kategori untuk dropdown dan filter tab
-        $dbCategories = Category::orderBy('name')->pluck('name')->toArray();
-        $defaultCategories = ['Berita', 'Wisata & Budaya', 'Talkshow', 'Dokumenter', 'Religi'];
-        $categories = array_unique(array_merge($defaultCategories, $dbCategories));
+        // Kategori untuk dropdown dan filter tab langsung dari database
+        if (Category::count() === 0) {
+            (new \Database\Seeders\CategorySeeder())->run();
+        }
+        $categories = Category::orderBy('name')->pluck('name')->toArray();
 
         $stats = [
             'total_acara'    => count($programs),

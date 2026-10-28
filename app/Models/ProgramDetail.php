@@ -176,12 +176,34 @@ class ProgramDetail extends Model
     }
 
     /**
+     * Pastikan semua program default sudah tersimpan di database (program_details)
+     * agar relasi database dengan kategori tersinkronisasi 100%.
+     */
+    public static function syncDefaultPrograms(): void
+    {
+        foreach (self::getDefaultPrograms() as $def) {
+            self::firstOrCreate(
+                ['program_title' => $def['acara']],
+                [
+                    'category'      => $def['kategori'],
+                    'description'   => $def['description'] ?? null,
+                    'thumbnail_url' => $def['thumbnail'] ?? null,
+                ]
+            );
+        }
+    }
+
+    /**
      * Ambil seluruh program rundown yang sudah disesuaikan dengan perubahan dari database.
      */
     public static function getProgramsWithDetails(): array
     {
+        // Pastikan program default tersimpan di database
+        self::syncDefaultPrograms();
+
         $programs = self::getDefaultPrograms();
         $savedDetails = self::all()->keyBy('program_title');
+        $validCategories = Category::pluck('name')->toArray();
 
         foreach ($programs as &$prog) {
             if (isset($savedDetails[$prog['acara']])) {
@@ -189,12 +211,17 @@ class ProgramDetail extends Model
                 if (!empty($detail->description)) {
                     $prog['description'] = $detail->description;
                 }
-                if (!empty($detail->category)) {
+                if ($detail->category !== null) {
                     $prog['kategori'] = $detail->category;
                 }
                 if (!empty($detail->thumbnail_url)) {
                     $prog['thumbnail'] = $detail->thumbnail_url;
                 }
+            }
+
+            // Jika kategori acara saat ini tidak terdaftar di master tabel kategori, kosongi
+            if (!empty($prog['kategori']) && !in_array($prog['kategori'], $validCategories)) {
+                $prog['kategori'] = '';
             }
         }
         unset($prog);

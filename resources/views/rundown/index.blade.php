@@ -67,9 +67,85 @@
         {{-- TABEL RUNDOWN --}}
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
 
+            <style>
+                .tabs-scroll-wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    max-width: 100%;
+                }
+                @media (min-width: 640px) {
+                    .tabs-scroll-wrapper {
+                        max-width: 62%;
+                    }
+                }
+                .scroll-tabs-container {
+                    display: flex !important;
+                    flex-wrap: nowrap !important;
+                    align-items: center;
+                    gap: 0.375rem;
+                    overflow-x: auto !important;
+                    white-space: nowrap !important;
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                    -webkit-overflow-scrolling: touch;
+                    scroll-behavior: smooth;
+                    padding-left: 2px;
+                    padding-right: 2px;
+                }
+                .scroll-tabs-container::-webkit-scrollbar {
+                    display: none !important;
+                }
+                .scroll-tabs-container button {
+                    flex-shrink: 0 !important;
+                    white-space: nowrap !important;
+                }
+                .tab-nav-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 20;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 9999px;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(4px);
+                    border: 1px solid rgba(226, 232, 240, 0.9);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                    color: #475569;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0;
+                    pointer-events: none;
+                    cursor: pointer;
+                }
+                .tabs-scroll-wrapper:hover .tab-nav-btn {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+                .tab-nav-btn:hover {
+                    color: #0066ff;
+                    background: #ffffff;
+                    transform: translateY(-50%) scale(1.12);
+                    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.22);
+                    border-color: #bfdbfe;
+                }
+                .tab-nav-btn:active {
+                    transform: translateY(-50%) scale(0.95);
+                }
+                .tab-nav-left {
+                    left: -10px;
+                }
+                .tab-nav-right {
+                    right: -10px;
+                }
+            </style>
+
             {{-- Header Tabel --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 shrink-0">
                     <div class="text-blue-600 flex-shrink-0">
                         <iconify-icon icon="lucide:calendar-days" width="30"></iconify-icon>
                     </div>
@@ -79,18 +155,36 @@
                     </div>
                 </div>
 
-                {{-- Filter Tabs --}}
-                <div class="flex flex-wrap items-center gap-1.5" id="filterTabs">
-                    @php
-                        $tabs = ['Semua', 'Nasional', 'Kalsel', 'Talkshow', 'Religi', 'Dokumenter'];
-                    @endphp
-                    @foreach($tabs as $tab)
-                        <button onclick="filterTab('{{ $tab }}')"
-                                data-tab="{{ $tab }}"
-                                class="tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all {{ $loop->first ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600' }}">
-                            {{ $tab }}
-                        </button>
-                    @endforeach
+                {{-- Filter Tabs (Scroll ke Samping dengan Tombol Geser) --}}
+                <div class="tabs-scroll-wrapper">
+                    {{-- Tombol Geser Kiri --}}
+                    <button type="button"
+                            onclick="scrollTabs('left', 'filterTabs')"
+                            class="tab-nav-btn tab-nav-left"
+                            title="Geser ke kiri">
+                        <iconify-icon icon="heroicons:chevron-left-20-solid" width="16"></iconify-icon>
+                    </button>
+
+                    <div class="scroll-tabs-container w-full" id="filterTabs">
+                        @php
+                            $tabs = array_merge(['Semua', 'Nasional', 'Kalsel'], $categories ?? []);
+                        @endphp
+                        @foreach($tabs as $tab)
+                            <button onclick="filterTab('{{ $tab }}')"
+                                    data-tab="{{ $tab }}"
+                                    class="tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer {{ $loop->first ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50' }}">
+                                {{ $tab }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Tombol Geser Kanan --}}
+                    <button type="button"
+                            onclick="scrollTabs('right', 'filterTabs')"
+                            class="tab-nav-btn tab-nav-right"
+                            title="Geser ke kanan">
+                        <iconify-icon icon="heroicons:chevron-right-20-solid" width="16"></iconify-icon>
+                    </button>
                 </div>
             </div>
 
@@ -511,11 +605,7 @@
                 matchTab = true;
             } else if (currentRundownFilterTab === 'Kalsel' && channel === 'kalsel') {
                 matchTab = true;
-            } else if (currentRundownFilterTab === 'Talkshow' && category.includes('talkshow')) {
-                matchTab = true;
-            } else if (currentRundownFilterTab === 'Religi' && category.includes('religi')) {
-                matchTab = true;
-            } else if (currentRundownFilterTab === 'Dokumenter' && category.includes('dokumenter')) {
+            } else if (category && (category === currentRundownFilterTab.toLowerCase() || category.includes(currentRundownFilterTab.toLowerCase()))) {
                 matchTab = true;
             }
 
@@ -555,6 +645,17 @@
             searchInput.focus();
         }
         filterRundown();
+    }
+
+    // Geser tab kategori ke kiri / kanan secara halus
+    function scrollTabs(direction, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const scrollDistance = 160;
+        container.scrollBy({
+            left: direction === 'left' ? -scrollDistance : scrollDistance,
+            behavior: 'smooth'
+        });
     }
 </script>
 @endpush

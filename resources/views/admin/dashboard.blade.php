@@ -107,10 +107,86 @@
 
         {{-- KOLOM KIRI: Tabel Data Acara --}}
         <div class="flex-1 min-w-0 w-full bg-white rounded-3xl border border-slate-200/80 shadow-xs p-5 sm:p-6">
+
+            <style>
+                .tabs-scroll-wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    max-width: 100%;
+                }
+                @media (min-width: 640px) {
+                    .tabs-scroll-wrapper {
+                        max-width: 62%;
+                    }
+                }
+                .scroll-tabs-container {
+                    display: flex !important;
+                    flex-wrap: nowrap !important;
+                    align-items: center;
+                    gap: 0.375rem;
+                    overflow-x: auto !important;
+                    white-space: nowrap !important;
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                    -webkit-overflow-scrolling: touch;
+                    scroll-behavior: smooth;
+                    padding-left: 2px;
+                    padding-right: 2px;
+                }
+                .scroll-tabs-container::-webkit-scrollbar {
+                    display: none !important;
+                }
+                .scroll-tabs-container button {
+                    flex-shrink: 0 !important;
+                    white-space: nowrap !important;
+                }
+                .tab-nav-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 20;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 9999px;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(4px);
+                    border: 1px solid rgba(226, 232, 240, 0.9);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                    color: #475569;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0;
+                    pointer-events: none;
+                    cursor: pointer;
+                }
+                .tabs-scroll-wrapper:hover .tab-nav-btn {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+                .tab-nav-btn:hover {
+                    color: #0066ff;
+                    background: #ffffff;
+                    transform: translateY(-50%) scale(1.12);
+                    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.22);
+                    border-color: #bfdbfe;
+                }
+                .tab-nav-btn:active {
+                    transform: translateY(-50%) scale(0.95);
+                }
+                .tab-nav-left {
+                    left: -10px;
+                }
+                .tab-nav-right {
+                    right: -10px;
+                }
+            </style>
             
             {{-- Header Tabel & Filter Tabs --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 shrink-0">
                     <div class="text-blue-600 flex-shrink-0">
                         <iconify-icon icon="lucide:calendar-days" width="28"></iconify-icon>
                     </div>
@@ -120,19 +196,37 @@
                     </div>
                 </div>
 
-                {{-- Filter Tabs (Semua, Nasional, Kalsel, Talkshow, Religi, Dokumenter) --}}
-                <div class="flex flex-wrap items-center gap-1.5" id="programFilterTabs">
-                    @php
-                        $filterTabs = ['Semua', 'Nasional', 'Kalsel', 'Talkshow', 'Religi', 'Dokumenter'];
-                    @endphp
-                    @foreach($filterTabs as $tab)
-                        <button type="button"
-                                onclick="applyProgramFilter('{{ $tab }}')"
-                                data-tab="{{ $tab }}"
-                                class="prog-tab-btn px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ $tab === 'Semua' ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50' }}">
-                            {{ $tab }}
-                        </button>
-                    @endforeach
+                {{-- Filter Tabs (Scroll ke Samping dengan Tombol Geser) --}}
+                <div class="tabs-scroll-wrapper">
+                    {{-- Tombol Geser Kiri --}}
+                    <button type="button"
+                            onclick="scrollTabs('left', 'programFilterTabs')"
+                            class="tab-nav-btn tab-nav-left"
+                            title="Geser ke kiri">
+                        <iconify-icon icon="heroicons:chevron-left-20-solid" width="16"></iconify-icon>
+                    </button>
+
+                    <div class="scroll-tabs-container w-full" id="programFilterTabs">
+                        @php
+                            $filterTabs = array_merge(['Semua', 'Nasional', 'Kalsel'], $categories ?? []);
+                        @endphp
+                        @foreach($filterTabs as $tab)
+                            <button type="button"
+                                    onclick="applyProgramFilter('{{ $tab }}')"
+                                    data-tab="{{ $tab }}"
+                                    class="prog-tab-btn px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer {{ $tab === 'Semua' ? 'bg-[#0066ff] text-white shadow-xs' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50' }}">
+                                {{ $tab }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Tombol Geser Kanan --}}
+                    <button type="button"
+                            onclick="scrollTabs('right', 'programFilterTabs')"
+                            class="tab-nav-btn tab-nav-right"
+                            title="Geser ke kanan">
+                        <iconify-icon icon="heroicons:chevron-right-20-solid" width="16"></iconify-icon>
+                    </button>
                 </div>
             </div>
 
@@ -360,6 +454,7 @@
                     <select id="form_category"
                             name="category"
                             class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-600 transition cursor-pointer">
+                        <option value="">-- Tanpa Kategori --</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat }}" {{ ($programs[0]['kategori'] ?? '') === $cat ? 'selected' : '' }}>
                                 {{ $cat }}
@@ -425,11 +520,16 @@
 
         // Set dropdown kategori
         const categorySelect = document.getElementById('form_category');
+        let categoryFound = false;
         for (let i = 0; i < categorySelect.options.length; i++) {
-            if (categorySelect.options[i].value === category) {
+            if (category && categorySelect.options[i].value.toLowerCase() === category.toLowerCase()) {
                 categorySelect.selectedIndex = i;
+                categoryFound = true;
                 break;
             }
+        }
+        if (!categoryFound) {
+            categorySelect.selectedIndex = 0; // Pilih option '-- Tanpa Kategori --'
         }
 
         // Catatan: Card biru di atas adalah acara yang sedang tayang sekarang (seperti di beranda).
@@ -511,11 +611,7 @@
                 matchTab = true;
             } else if (currentAdminFilterTab === 'Kalsel' && channel === 'kalsel') {
                 matchTab = true;
-            } else if (currentAdminFilterTab === 'Talkshow' && category.includes('talkshow')) {
-                matchTab = true;
-            } else if (currentAdminFilterTab === 'Religi' && category.includes('religi')) {
-                matchTab = true;
-            } else if (currentAdminFilterTab === 'Dokumenter' && category.includes('dokumenter')) {
+            } else if (category && (category === currentAdminFilterTab.toLowerCase() || category.includes(currentAdminFilterTab.toLowerCase()))) {
                 matchTab = true;
             }
 
@@ -635,5 +731,16 @@
             form.submit();
         });
     });
+
+    // Geser tab kategori ke kiri / kanan secara halus
+    function scrollTabs(direction, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const scrollDistance = 160;
+        container.scrollBy({
+            left: direction === 'left' ? -scrollDistance : scrollDistance,
+            behavior: 'smooth'
+        });
+    }
 </script>
 @endpush
