@@ -11,6 +11,16 @@
         showEditModal: false,
         showDeleteModal: false,
         showProgramsModal: false,
+        showProgramDetailModal: false,
+        selectedProgramDetail: {
+            acara: '',
+            waktu: '',
+            durasi: '',
+            kategori: '',
+            description: '',
+            status: '',
+            status_type: ''
+        },
         selectedCategory: {
             name: '',
             count: 0,
@@ -49,6 +59,18 @@
                 programs: category.programs || []
             };
             this.showProgramsModal = true;
+        },
+        openProgramDetail(prog) {
+            this.selectedProgramDetail = {
+                acara: prog.acara || '',
+                waktu: prog.waktu || '-',
+                durasi: prog.durasi || '-',
+                kategori: prog.kategori || this.selectedCategory.name || '',
+                description: prog.description || 'Menghadirkan tayangan berkualitas dan informasi terkini dari TVRI Kalimantan Selatan untuk masyarakat Banua.',
+                status: prog.status || 'REGULER',
+                status_type: prog.status_type || 'default'
+            };
+            this.showProgramDetailModal = true;
         },
         get filteredModalPrograms() {
             if (!this.selectedCategory.programs) return [];
@@ -287,9 +309,14 @@
             {{-- Body Modal: Container Abu-Abu dengan List Acara Berbentuk Pill Putih --}}
             <div class="bg-[#f1f3f5] rounded-[1.8rem] p-4 sm:p-5 min-h-[320px] max-h-[440px] overflow-y-auto space-y-2.5 border border-slate-200/60">
                 <template x-for="(prog, idx) in filteredModalPrograms" :key="idx">
-                    <div class="w-full px-5 py-3 rounded-full bg-white font-black text-sm text-[#002b66] shadow-2xs transition hover:scale-[1.01]"
-                         :class="idx === 0 ? 'border-2 border-[#0088ff]' : 'border border-slate-200/80'">
+                    <div class="w-full px-5 py-3 rounded-full bg-white font-black text-sm text-[#002b66] border border-slate-200/80 shadow-2xs transition hover:scale-[1.01] hover:border-blue-300 hover:text-[#0052cc] cursor-pointer flex items-center justify-between group"
+                         @click="openProgramDetail(prog)"
+                         title="Klik untuk melihat deskripsi dan jam tayang">
                         <span x-text="(idx + 1) + '. ' + prog.acara"></span>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-400 group-hover:text-[#0052cc]">
+                            <span class="text-[11px] font-semibold" x-text="prog.waktu && prog.waktu !== '-' ? prog.waktu : ''"></span>
+                            <iconify-icon icon="heroicons:chevron-right" width="16"></iconify-icon>
+                        </div>
                     </div>
                 </template>
 
@@ -298,11 +325,80 @@
                 </div>
             </div>
 
-            {{-- Footer Modal: Tombol TUTUP Outline Merah di Kanan Bawah --}}
+            {{-- Footer Modal: Tombol TUTUP (Outline Merah, Hover: Filled Merah + Teks Putih) --}}
             <div class="flex justify-end pt-1">
                 <button type="button"
                         @click="showProgramsModal = false"
-                        class="px-8 py-2 rounded-full border-2 border-[#ff0000] hover:bg-red-50 text-[#ff0000] font-black text-xs tracking-wider transition uppercase cursor-pointer">
+                        class="px-8 py-2 rounded-full border-2 border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white font-black text-xs tracking-wider transition-all duration-200 uppercase cursor-pointer shadow-2xs hover:shadow-sm">
+                    TUTUP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============================================================== --}}
+    {{-- MODAL DETAIL ACARA (DESKRIPSI & JAM TAYANG) DARI LIST KATEGORI --}}
+    {{-- ============================================================== --}}
+    <div x-show="showProgramDetailModal"
+         x-cloak
+         style="display: none;"
+         class="fixed inset-0 z-60 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-4"
+             @click.away="showProgramDetailModal = false"
+             x-transition:enter="ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            
+            {{-- Header Detail Acara --}}
+            <div class="flex items-start justify-between pb-2 border-b border-slate-100 gap-2">
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-blue-600 tracking-wider block" x-text="selectedProgramDetail.kategori"></span>
+                    <h3 class="text-xl sm:text-2xl font-black text-[#002b66] tracking-tight leading-snug" x-text="selectedProgramDetail.acara"></h3>
+                </div>
+                <button type="button" @click="showProgramDetailModal = false" class="text-slate-400 hover:text-slate-600 transition p-1 cursor-pointer">
+                    <iconify-icon icon="heroicons:x-mark" width="20"></iconify-icon>
+                </button>
+            </div>
+
+            {{-- Jam Tayang & Durasi --}}
+            <div class="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-[#0052cc] flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:clock" width="18"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Jam Tayang</span>
+                        <span class="text-xs sm:text-sm font-black text-slate-800 block" x-text="selectedProgramDetail.waktu + (selectedProgramDetail.waktu !== '-' ? ' WITA' : '')"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100/70 text-indigo-600 flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:timer" width="18"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Durasi</span>
+                        <span class="text-xs sm:text-sm font-black text-slate-800 block" x-text="selectedProgramDetail.durasi"></span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Deskripsi Acara --}}
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <iconify-icon icon="heroicons:document-text-solid" width="16" class="text-[#0052cc]"></iconify-icon>
+                    <span>Deskripsi Acara</span>
+                </div>
+                <div class="bg-slate-50/70 rounded-xl p-3.5 border border-slate-200/70">
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium" x-text="selectedProgramDetail.description"></p>
+                </div>
+            </div>
+
+            {{-- Footer Tombol Tutup --}}
+            <div class="flex justify-end pt-2">
+                <button type="button"
+                        @click="showProgramDetailModal = false"
+                        class="px-8 py-2 rounded-full border-2 border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white font-black text-xs tracking-wider transition-all duration-200 uppercase cursor-pointer shadow-2xs hover:shadow-sm">
                     TUTUP
                 </button>
             </div>

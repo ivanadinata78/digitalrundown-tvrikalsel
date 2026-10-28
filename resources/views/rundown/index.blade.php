@@ -356,16 +356,29 @@
                         @endphp
 
                         @foreach($tableData as $row)
-                            <tr class="rundown-row border-b border-slate-100/80 hover:bg-blue-50/20 transition-colors"
+                            @php
+                                $rowModalData = array_merge($row, [
+                                    'thumbnail_url' => !empty($row['thumbnail']) ? asset('images/thumbnails/' . $row['thumbnail']) : null,
+                                    'description' => !empty($row['description']) ? $row['description'] : 'Menghadirkan tayangan berkualitas dan informasi terkini dari TVRI Kalimantan Selatan untuk masyarakat Banua.'
+                                ]);
+                            @endphp
+                            <tr class="rundown-row border-b border-slate-100/80 hover:bg-blue-50/50 transition-all cursor-pointer group"
                                 data-channel="{{ $row['channel'] }}"
                                 data-category="{{ $row['kategori'] }}"
-                                data-title="{{ $row['acara'] }}">
+                                data-title="{{ $row['acara'] }}"
+                                onclick='openProgramDetailModal(@json($rowModalData))'
+                                title="Klik untuk melihat deskripsi dan jam tayang acara">
 
                                 {{-- No --}}
                                 <td class="px-3 py-2.5 text-center text-xs font-semibold text-slate-700">{{ $row['no'] }}</td>
 
                                 {{-- Waktu --}}
-                                <td class="px-3 py-2.5 text-xs font-semibold text-slate-700 whitespace-nowrap">{{ $row['waktu'] }}</td>
+                                <td class="px-3 py-2.5 text-xs font-bold text-[#0052cc] whitespace-nowrap">
+                                    <div class="flex items-center gap-1.5">
+                                        <iconify-icon icon="lucide:clock" width="13" class="text-blue-500"></iconify-icon>
+                                        <span>{{ $row['waktu'] }}</span>
+                                    </div>
+                                </td>
 
                                 {{-- Mata Acara --}}
                                 <td class="px-3 py-2.5">
@@ -373,14 +386,17 @@
                                         @if($row['thumbnail'])
                                             <img src="{{ asset('images/thumbnails/' . $row['thumbnail']) }}"
                                                  alt="{{ $row['acara'] }}"
-                                                 class="w-10 h-6 sm:w-11 sm:h-7 rounded object-cover flex-shrink-0 shadow-xs border border-slate-200/50">
+                                                 class="w-10 h-6 sm:w-11 sm:h-7 rounded object-cover flex-shrink-0 shadow-xs border border-slate-200/50 group-hover:scale-105 transition-transform">
                                         @else
                                             <div class="w-10 h-6 sm:w-11 sm:h-7 rounded bg-slate-100 flex items-center justify-center flex-shrink-0">
                                                 <iconify-icon icon="lucide:tv" class="text-slate-400" width="14"></iconify-icon>
                                             </div>
                                         @endif
                                         <div>
-                                            <p class="font-bold text-slate-900 text-xs leading-tight">{{ $row['acara'] }}</p>
+                                            <p class="font-bold text-slate-900 text-xs leading-tight group-hover:text-[#0052cc] transition-colors flex items-center gap-1.5">
+                                                <span>{{ $row['acara'] }}</span>
+                                                <iconify-icon icon="heroicons:arrow-top-right-on-square" width="12" class="opacity-0 group-hover:opacity-70 text-blue-500 transition-opacity"></iconify-icon>
+                                            </p>
                                             <p class="text-[11px] text-slate-400 font-normal leading-tight mt-0.5">{{ $row['kategori'] }}</p>
                                         </div>
                                     </div>
@@ -462,15 +478,27 @@
                     ];
                 @endphp
                 @foreach($nextPrograms as $prog)
-                    <div class="flex items-center gap-3">
-                        <div class="w-14 h-9 rounded-lg overflow-hidden flex-shrink-0 shadow-xs border border-slate-100">
-                            <img src="{{ asset('images/thumbnails/' . $prog['thumbnail']) }}"
+                    @php
+                        $matchedProg = collect($tableData)->firstWhere('acara', $prog['acara']) ?? $prog;
+                        $progModalData = array_merge($matchedProg, [
+                            'thumbnail_url' => !empty($matchedProg['thumbnail']) ? asset('images/thumbnails/' . $matchedProg['thumbnail']) : (!empty($prog['thumbnail']) ? asset('images/thumbnails/' . $prog['thumbnail']) : null),
+                            'description' => !empty($matchedProg['description']) ? $matchedProg['description'] : 'Program siaran pilihan TVRI Kalimantan Selatan.'
+                        ]);
+                    @endphp
+                    <div class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-blue-50/60 transition cursor-pointer group"
+                         onclick='openProgramDetailModal(@json($progModalData))'
+                         title="Klik untuk melihat deskripsi & jam tayang">
+                        <div class="w-14 h-9 rounded-lg overflow-hidden flex-shrink-0 shadow-xs border border-slate-100 group-hover:scale-105 transition-transform">
+                            <img src="{{ asset('images/thumbnails/' . ($prog['thumbnail'] ?? 'habarbanua.jpg')) }}"
                                  alt="{{ $prog['acara'] }}"
                                  class="w-full h-full object-cover">
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-[11px] text-slate-400 font-medium leading-none mb-1">{{ $prog['waktu'] }}</p>
-                            <p class="text-xs font-extrabold text-[#1e3a8a] leading-tight truncate">{{ $prog['acara'] }}</p>
+                            <p class="text-[11px] text-slate-400 font-medium leading-none mb-1 flex items-center gap-1">
+                                <iconify-icon icon="lucide:clock" width="11" class="text-blue-500"></iconify-icon>
+                                <span>{{ $prog['waktu'] }}</span>
+                            </p>
+                            <p class="text-xs font-extrabold text-[#1e3a8a] group-hover:text-blue-600 transition-colors leading-tight truncate">{{ $prog['acara'] }}</p>
                             <p class="text-[10px] text-slate-400 leading-none mt-1">{{ $prog['kategori'] }}</p>
                         </div>
                     </div>
@@ -548,11 +576,203 @@
     </div>
 </div>
 
+{{-- ============================================================== --}}
+{{-- MODAL DETAIL ACARA (JAM TAYANG & DESKRIPSI) --}}
+{{-- ============================================================== --}}
+<div id="programDetailModal"
+     class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 transition-all duration-200"
+     onclick="closeProgramDetailModal()">
+    <div class="bg-white rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 transform transition-all duration-200 scale-95 opacity-0"
+         id="programDetailModalContent"
+         onclick="event.stopPropagation()">
+        
+        {{-- Banner & Thumbnail Header --}}
+        <div class="relative h-44 sm:h-52 w-full bg-[#0c2461] overflow-hidden flex items-center justify-center">
+            <img id="modalProgThumbnail"
+                 src=""
+                 alt=""
+                 class="w-full h-full object-cover">
+            
+            <div id="modalProgThumbnailFallback" class="hidden w-full h-full bg-gradient-to-br from-[#0c2461] to-[#0052cc] flex items-center justify-center">
+                <iconify-icon icon="lucide:tv" class="text-white/40" width="64"></iconify-icon>
+            </div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
+            
+            {{-- Tombol Tutup X di Kanan Atas --}}
+            <button type="button"
+                    onclick="closeProgramDetailModal()"
+                    class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition cursor-pointer"
+                    title="Tutup">
+                <iconify-icon icon="heroicons:x-mark" width="20"></iconify-icon>
+            </button>
+
+            {{-- Badges di Bagian Bawah Gambar --}}
+            <div class="absolute bottom-3.5 left-4 right-4 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span id="modalProgCategory" class="px-3 py-1 rounded-full bg-[#0052cc] text-white text-xs font-black backdrop-blur-xs shadow-xs"></span>
+                    <span id="modalProgChannel" class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold backdrop-blur-xs"></span>
+                </div>
+                <span id="modalProgStatus" class="text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs"></span>
+            </div>
+        </div>
+
+        {{-- Konten Detail Acara --}}
+        <div class="p-5 sm:p-6 space-y-4">
+            {{-- Judul Acara --}}
+            <div>
+                <h3 id="modalProgTitle" class="text-xl sm:text-2xl font-black text-[#002b66] tracking-tight leading-snug"></h3>
+            </div>
+
+            {{-- Info Jam Tayang & Durasi --}}
+            <div class="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-[#0052cc] flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:clock" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Jam Tayang</span>
+                        <span id="modalProgTime" class="text-sm sm:text-base font-black text-slate-800 block"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100/70 text-indigo-600 flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:timer" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Durasi</span>
+                        <span id="modalProgDuration" class="text-sm sm:text-base font-black text-slate-800 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Deskripsi Acara --}}
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <iconify-icon icon="heroicons:document-text-solid" width="16" class="text-[#0052cc]"></iconify-icon>
+                    <span>Deskripsi Acara</span>
+                </div>
+                <div class="bg-slate-50/70 rounded-xl p-3.5 border border-slate-200/70">
+                    <p id="modalProgDescription" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium"></p>
+                </div>
+            </div>
+
+            {{-- Footer Tombol Tutup --}}
+            <div class="pt-2 flex justify-end">
+                <button type="button"
+                        onclick="closeProgramDetailModal()"
+                        class="px-8 py-2 rounded-full border-2 border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white font-black text-xs tracking-wider transition-all duration-200 uppercase cursor-pointer shadow-2xs hover:shadow-sm">
+                    TUTUP
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
     let currentRundownFilterTab = 'Semua';
+
+    // Buka Modal Pop-Up Detail Acara (Jam Tayang & Deskripsi)
+    function openProgramDetailModal(prog) {
+        if (!prog) return;
+
+        const modal = document.getElementById('programDetailModal');
+        const content = document.getElementById('programDetailModalContent');
+        if (!modal || !content) return;
+
+        // Set Judul
+        const titleEl = document.getElementById('modalProgTitle');
+        if (titleEl) titleEl.textContent = prog.acara || 'Program Acara';
+
+        // Set Kategori & Channel
+        const catEl = document.getElementById('modalProgCategory');
+        if (catEl) catEl.textContent = prog.kategori || 'TVRI Kalsel';
+
+        const chanEl = document.getElementById('modalProgChannel');
+        if (chanEl) chanEl.textContent = prog.channel || 'Kalsel';
+
+        // Set Jam Tayang & Durasi
+        const timeEl = document.getElementById('modalProgTime');
+        if (timeEl) timeEl.textContent = prog.waktu ? (prog.waktu + ' WITA') : '-';
+
+        const durEl = document.getElementById('modalProgDuration');
+        if (durEl) durEl.textContent = prog.durasi || '-';
+
+        // Set Deskripsi Acara
+        const descEl = document.getElementById('modalProgDescription');
+        if (descEl) {
+            descEl.textContent = prog.description || 'Menghadirkan tayangan berkualitas dan informasi terkini dari TVRI Kalimantan Selatan untuk masyarakat Banua.';
+        }
+
+        // Set Status Badge
+        const statusEl = document.getElementById('modalProgStatus');
+        if (statusEl) {
+            const statusType = (prog.status_type || '').toLowerCase();
+            statusEl.textContent = prog.status || 'PLAYBACK';
+
+            if (statusType === 'live') {
+                statusEl.className = 'text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs bg-[#d90429]';
+            } else if (statusType === 'relay') {
+                statusEl.className = 'text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs bg-[#1d4ed8]';
+            } else if (statusType === 'rerun') {
+                statusEl.className = 'text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs bg-[#eab308]';
+            } else {
+                statusEl.className = 'text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs bg-[#16a34a]';
+            }
+        }
+
+        // Set Thumbnail
+        const imgEl = document.getElementById('modalProgThumbnail');
+        const fallbackEl = document.getElementById('modalProgThumbnailFallback');
+        if (imgEl && fallbackEl) {
+            if (prog.thumbnail_url) {
+                imgEl.src = prog.thumbnail_url;
+                imgEl.alt = prog.acara || '';
+                imgEl.classList.remove('hidden');
+                fallbackEl.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                fallbackEl.classList.remove('hidden');
+            }
+        }
+
+        // Buka Modal & Kunci Scroll
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    // Tutup Modal Pop-Up Detail Acara
+    function closeProgramDetailModal() {
+        const modal = document.getElementById('programDetailModal');
+        const content = document.getElementById('programDetailModalContent');
+        if (!modal || !content) return;
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }, 150);
+    }
+
+    // Event listener tombol Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProgramDetailModal();
+        }
+    });
 
     // Filter tab functionality
     function filterTab(tab) {
