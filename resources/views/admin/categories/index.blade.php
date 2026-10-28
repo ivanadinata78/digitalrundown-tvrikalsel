@@ -75,12 +75,8 @@
         @endfor
     </div>
 
-    {{-- Layout Utama: 2 Kolom (Kiri: Judul, Cari, Tabel | Kanan: Statistik & Tombol Tambah) --}}
-    <div class="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 relative z-10">
-        
-        {{-- ============================================================== --}}
-        {{-- SISI KIRI: Judul, Kolom Cari, & Tabel Kategori (~65% Lebar) --}}
-        {{-- ============================================================== --}}
+    {{-- Baris Atas: Judul & Input Pencarian di Sisi Kiri (Sesuai Lebar Kolom Tabel) --}}
+    <div class="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 relative z-10 mb-3.5">
         <div class="w-full lg:flex-1 space-y-3.5">
             {{-- Judul Halaman --}}
             <div class="flex items-center gap-2.5">
@@ -102,8 +98,20 @@
                     <iconify-icon icon="heroicons:x-mark" width="16"></iconify-icon>
                 </button>
             </div>
+        </div>
 
-            {{-- Card Tabel Kategori --}}
+        {{-- Spacer Kolom Kanan agar bilah pencarian tetap sejajar dengan batas kanan tabel --}}
+        <div class="hidden lg:block w-[380px] shrink-0"></div>
+    </div>
+
+    {{-- Baris Utama: Card Tabel Kategori (Kiri) & Statistik + Tombol Tambah (Kanan) --}}
+    {{-- Posisi container statistik dan tombol disetarakan/sejajar sempurna dengan tabel kategori di sampingnya --}}
+    <div class="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 relative z-10">
+        
+        {{-- ============================================================== --}}
+        {{-- SISI KIRI: Card Tabel Kategori --}}
+        {{-- ============================================================== --}}
+        <div class="w-full lg:flex-1">
             <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs sm:text-sm">
@@ -154,7 +162,7 @@
                                     {{-- Aksi (Edit Biru & Hapus Merah Sesuai Gambar 1) --}}
                                     <td class="py-3.5 px-5 text-center">
                                         <div class="inline-flex items-center justify-center gap-3.5">
-                                            {{-- Tombol Edit --}}
+                                             {{-- Tombol Edit --}}
                                             <button type="button"
                                                     @click="openEditModal({
                                                         id: {{ $cat->id }},
@@ -198,9 +206,9 @@
         </div>
 
         {{-- ============================================================== --}}
-        {{-- SISI KANAN: Kartu Statistik & Tombol Tambah Kategori (~35% Lebar) --}}
+        {{-- SISI KANAN: Kartu Statistik & Tombol Tambah Kategori (Sejajar dengan Tabel Kategori) --}}
         {{-- ============================================================== --}}
-        <div class="w-full lg:w-[380px] shrink-0 space-y-4 pt-1">
+        <div class="w-full lg:w-[380px] shrink-0 space-y-4">
             {{-- 2 Kartu Statistik Berdampingan --}}
             <div class="grid grid-cols-2 gap-3.5">
                 {{-- Card Total Kategori --}}
