@@ -425,7 +425,6 @@
                     </div>
                     <div>
                         <h3 class="font-extrabold text-sm sm:text-base text-slate-900">Tambah Kategori Baru</h3>
-                        <p class="text-[11px] text-slate-400">Masukkan label klasifikasi siaran baru</p>
                     </div>
                 </div>
                 <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 transition p-1">

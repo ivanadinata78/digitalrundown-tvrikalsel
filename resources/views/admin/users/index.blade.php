@@ -8,12 +8,7 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">
-                <iconify-icon icon="heroicons:shield-check-solid" width="16"></iconify-icon>
-                <span>Panel Super Administrator</span>
-            </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Manajemen Pengguna</h1>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Kelola akun internal karyawan & operator rundown TVRI Kalsel tanpa email.</p>
         </div>
 
         <a href="{{ route('admin.users.create') }}"
@@ -270,20 +265,7 @@
         @endif
     </div>
 
-    {{-- Info Card Box: Alur Kerja Tanpa Email --}}
-    <div class="rounded-2xl p-5 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-start gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-cyan-300 shrink-0">
-                <iconify-icon icon="heroicons:information-circle-solid" width="24"></iconify-icon>
-            </div>
-            <div>
-                <h4 class="font-extrabold text-sm sm:text-base text-white">Alur Akun Internal TVRI Kalimantan Selatan</h4>
-                <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">
-                    Pengguna tidak memerlukan email untuk mendaftar atau login. Cukup bagikan <strong>Username</strong> dan <strong>Password</strong> yang dibuat oleh Super Admin ke karyawan bersangkutan. Jika karyawan lupa kata sandi, Super Admin dapat langsung meresetnya melalui tombol <strong>Edit</strong>.
-                </p>
-            </div>
-        </div>
-    </div>
+
 
 </div>
 @endsection

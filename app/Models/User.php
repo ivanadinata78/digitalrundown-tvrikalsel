@@ -64,4 +64,16 @@ class User extends Authenticatable
     {
         return $this->role === 'karyawan';
     }
+
+    /**
+     * URL Foto Profil / Avatar pengguna.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatar && file_exists(public_path('images/avatars/' . $this->avatar))) {
+            return asset('images/avatars/' . $this->avatar);
+        }
+
+        return null;
+    }
 }

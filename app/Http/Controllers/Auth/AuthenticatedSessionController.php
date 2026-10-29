@@ -38,12 +38,8 @@ class AuthenticatedSessionController extends Controller
                 ->with('error', 'Akun Anda telah dinonaktifkan. Hubungi Administrator.');
         }
 
-        // Redirect berdasarkan role
-        if (auth()->user()->isAdmin()) {
-            return redirect()->intended(route('admin.dashboard'));
-        }
-
-        return redirect()->intended(route('rundown.index'));
+        // Redirect ke dashboard admin & operator
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**

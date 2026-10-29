@@ -598,14 +598,6 @@
             </div>
 
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-            
-            {{-- Tombol Tutup X di Kanan Atas --}}
-            <button type="button"
-                    onclick="closeProgramDetailModal()"
-                    class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition cursor-pointer"
-                    title="Tutup">
-                <iconify-icon icon="heroicons:x-mark" width="20"></iconify-icon>
-            </button>
 
             {{-- Badges di Bagian Bawah Gambar --}}
             <div class="absolute bottom-3.5 left-4 right-4 flex items-center justify-between gap-2">

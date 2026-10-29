@@ -66,19 +66,11 @@
             {{-- Login Button Kanan --}}
             <div class="flex items-center">
                 @auth
-                    <div class="flex items-center gap-2">
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="text-sm font-bold text-[#1e3a8a] hover:text-blue-600 flex items-center gap-1">
-                                <iconify-icon icon="heroicons:squares-2x2" width="16"></iconify-icon>
-                                DASHBOARD
-                            </a>
-                        @else
-                            <a href="{{ route('rundown.index') }}" class="text-sm font-bold text-[#1e3a8a] hover:text-blue-600 flex items-center gap-1">
-                                <iconify-icon icon="heroicons:squares-2x2" width="16"></iconify-icon>
-                                DASHBOARD
-                            </a>
-                        @endif
-                    </div>
+                    <a href="{{ route('admin.dashboard') }}"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold text-xs tracking-wider transition shadow-2xs">
+                        <iconify-icon icon="heroicons:squares-2x2-solid" width="16"></iconify-icon>
+                        <span>DASHBOARD</span>
+                    </a>
                 @else
                     <a href="{{ route('login') }}"
                        class="text-sm font-extrabold text-[#1e3a8a] hover:text-blue-600 tracking-wider transition">

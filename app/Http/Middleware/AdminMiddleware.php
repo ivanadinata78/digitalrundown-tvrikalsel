@@ -15,8 +15,8 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect()->route('rundown.index')
-                ->with('error', 'Akses ditolak. Halaman ini hanya untuk Admin.');
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akses ditolak. Fitur kelola pengguna hanya untuk Super Administrator.');
         }
 
         return $next($request);
