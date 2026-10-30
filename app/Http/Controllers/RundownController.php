@@ -2,21 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProgramDetail;
+use App\Models\Category;
+use App\Services\RundownSheetService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class RundownController extends Controller
 {
-    /**
-     * Tampilkan halaman rundown harian (Beranda).
-     */
-    public function index(): View
-    {
-        $programs = ProgramDetail::getProgramsWithDetails();
-        $currentOnAir = ProgramDetail::getCurrentOnAir($programs);
-        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+    public function __construct(
+        protected RundownSheetService $sheetService
+    ) {}
 
-        return view('rundown.index', compact('programs', 'currentOnAir', 'categories'));
+    /**
+     * Tampilkan halaman rundown harian (Beranda) dengan data realtime dari Google Spreadsheet.
+     */
+    public function index(Request $request): View
+    {
+        $availableDays = $this->sheetService->getAvailableDays();
+        $todayKey = $this->sheetService->getTodayKey();
+
+        // Ambil hari dari query param ?hari=... (default: hari ini)
+        $selectedDay = strtolower($request->query('hari', $todayKey));
+        if (!isset($availableDays[$selectedDay])) {
+            $selectedDay = $todayKey;
+        }
+
+        $programs = $this->sheetService->getProgramsByDay($selectedDay);
+        $currentOnAir = $this->sheetService->getCurrentOnAir($programs);
+        $categories = Category::orderBy('name')->pluck('name')->toArray();
+
+        return view('rundown.index', compact(
+            'programs',
+            'currentOnAir',
+            'categories',
+            'availableDays',
+            'selectedDay',
+            'todayKey'
+        ));
     }
 }

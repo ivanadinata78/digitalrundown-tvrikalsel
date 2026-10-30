@@ -6,9 +6,30 @@
 <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
 
     {{-- Sub-header Halaman --}}
-    <div>
-        <h1 class="text-xl sm:text-2xl font-black text-[#0066ff] tracking-tight">Dashboard Admin</h1>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-[#0066ff] tracking-tight">Dashboard Admin</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Kelola thumbnail, kategori, dan deskripsi acara siaran TVRI Kalimantan Selatan.</p>
+        </div>
+
+        {{-- Tombol Sinkronkan Spreadsheet --}}
+        <form method="POST" action="{{ route('admin.programs.sync') }}">
+            @csrf
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer shadow-xs active:scale-95">
+                <iconify-icon icon="heroicons:arrow-path-solid" width="16"></iconify-icon>
+                <span>Sinkronkan Spreadsheet</span>
+            </button>
+        </form>
     </div>
+
+    {{-- Alert Status --}}
+    @if(session('status'))
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 shadow-xs">
+            <iconify-icon icon="heroicons:check-circle-solid" width="18" class="text-emerald-600 shrink-0"></iconify-icon>
+            <span>{{ session('status') }}</span>
+        </div>
+    @endif
 
     {{-- BARIS ATAS: 4 Kartu Statistik (Kiri) + Hero Preview Live (Kanan) --}}
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
@@ -91,7 +112,7 @@
                         {{ $currentOnAir['acara'] ?? 'HABAR BANUA' }}
                     </h2>
                     <p id="onair-banner-category" class="text-cyan-200 text-xs font-semibold">
-                        {{ $currentOnAir['kategori'] ?? 'Kalimantan Selatan' }}
+                        {{ $currentOnAir['kategori'] ?? '' }}
                     </p>
                     <p id="onair-banner-desc" class="text-white/80 text-[11px] line-clamp-1 mt-0.5">
                         {{ $currentOnAir['description'] ?? 'Menghadirkan informasi terkini seputar Kalimantan Selatan...' }}
@@ -184,6 +205,21 @@
                 }
             </style>
             
+            {{-- PILIH HARI (SENIN - MINGGU) --}}
+            <div class="mb-4">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                    @foreach($availableDays as $dayKey => $dayData)
+                        <a href="{{ route('admin.dashboard', ['hari' => $dayKey]) }}"
+                           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 {{ $selectedDay === $dayKey ? 'bg-[#0066ff] text-white shadow-xs' : 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900' }}">
+                            <span>{{ $dayData['name'] }}</span>
+                            @if($dayKey === $todayKey)
+                                <span class="text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-700' }}">Hari Ini</span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             {{-- Header Tabel & Filter Tabs --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3 shrink-0">
@@ -191,8 +227,13 @@
                         <iconify-icon icon="lucide:calendar-days" width="28"></iconify-icon>
                     </div>
                     <div>
-                        <h2 class="text-base font-extrabold text-[#0c2461] leading-tight">Data Acara</h2>
-                        <p class="text-xs text-slate-400">Dashboard</p>
+                        <h2 class="text-base font-extrabold text-[#0c2461] leading-tight flex items-center gap-2">
+                            <span>Data Acara ({{ $availableDays[$selectedDay]['name'] ?? 'Hari Ini' }})</span>
+                            @if($selectedDay === $todayKey)
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Hari Ini</span>
+                            @endif
+                        </h2>
+                        <p class="text-xs text-slate-400">Jadwal siaran langsung tersinkron dengan spreadsheet.</p>
                     </div>
                 </div>
 
@@ -281,9 +322,9 @@
                                 data-channel="{{ $row['channel'] }}"
                                 data-duration="{{ $row['durasi'] }}"
                                 data-time="{{ $row['waktu'] }}"
-                                data-thumbnail="{{ $row['thumbnail'] }}"
-                                data-thumb-url="{{ asset('images/thumbnails/' . $row['thumbnail']) }}"
-                                data-description="{{ $row['description'] }}"
+                                data-thumbnail="{{ $row['thumbnail'] ?? '' }}"
+                                data-thumb-url="{{ !empty($row['thumbnail']) ? asset('images/thumbnails/' . $row['thumbnail']) : '' }}"
+                                data-description="{{ $row['description'] ?? '' }}"
                                 onclick="selectProgramRow(this)">
 
                                 {{-- No --}}
@@ -296,7 +337,11 @@
                                 <td class="py-3 px-3">
                                     <div class="leading-tight">
                                         <p class="font-extrabold text-slate-900 text-xs sm:text-sm row-title">{{ $row['acara'] }}</p>
-                                        <p class="text-[11px] text-slate-400 row-category">{{ $row['kategori'] }}</p>
+                                        @if(!empty($row['kategori']))
+                                            <p class="text-[11px] text-slate-400 row-category">{{ $row['kategori'] }}</p>
+                                        @else
+                                            <p class="text-[11px] text-slate-300 italic row-category">Belum diklasifikasi</p>
+                                        @endif
                                     </div>
                                 </td>
 
@@ -696,7 +741,14 @@
                     const titleEl = currentActiveRow.querySelector('.row-title');
                     const catEl = currentActiveRow.querySelector('.row-category');
                     if (titleEl) titleEl.innerText = newTitle;
-                    if (catEl) catEl.innerText = newCat;
+                    if (catEl) {
+                        catEl.innerText = newCat || 'Belum diklasifikasi';
+                        if (!newCat) {
+                            catEl.className = 'text-[11px] text-slate-300 italic row-category';
+                        } else {
+                            catEl.className = 'text-[11px] text-slate-400 row-category';
+                        }
+                    }
 
                     if (res.data.thumbnail_url) {
                         currentActiveRow.setAttribute('data-thumb-url', res.data.thumbnail_url);

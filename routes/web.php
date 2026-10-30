@@ -39,6 +39,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['karyawan'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/programs/update-detail', [DashboardController::class, 'updateProgramDetail'])->name('programs.update-detail');
+    Route::post('/programs/sync', [DashboardController::class, 'syncFromSheets'])->name('programs.sync');
 
     // Manajemen Kategori Acara (Bisa diakses Karyawan & Super Admin)
     Route::get('/kategori', [CategoryController::class, 'index'])->name('categories.index');

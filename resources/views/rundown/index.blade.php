@@ -43,9 +43,13 @@
                     <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-none mb-1">
                         {{ $currentOnAir['acara'] ?? 'HABAR BANUA' }}
                     </h1>
-                    <p class="text-white/90 text-sm font-medium mb-3">
-                        {{ $currentOnAir['kategori'] ?? 'Kalimantan Selatan' }}
-                    </p>
+                    @if(!empty($currentOnAir['kategori']))
+                        <p class="text-white/90 text-sm font-medium mb-3">
+                            {{ $currentOnAir['kategori'] }}
+                        </p>
+                    @else
+                        <div class="mb-2"></div>
+                    @endif
 
                     {{-- Waktu & Badge Live --}}
                     <div class="flex items-center gap-2 mb-2">
@@ -143,6 +147,21 @@
                 }
             </style>
 
+            {{-- PILIH HARI (SENIN - MINGGU) --}}
+            <div class="mb-4">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                    @foreach($availableDays as $dayKey => $dayData)
+                        <a href="{{ route('home', ['hari' => $dayKey]) }}"
+                           class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 {{ $selectedDay === $dayKey ? 'bg-[#0066ff] text-white shadow-xs' : 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900' }}">
+                            <span>{{ $dayData['name'] }}</span>
+                            @if($dayKey === $todayKey)
+                                <span class="text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-700' }}">Hari Ini</span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             {{-- Header Tabel --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
                 <div class="flex items-center gap-3 shrink-0">
@@ -150,8 +169,13 @@
                         <iconify-icon icon="lucide:calendar-days" width="30"></iconify-icon>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-slate-800 leading-tight">Rundown Acara Hari ini</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}</p>
+                        <h2 class="text-base font-bold text-slate-800 leading-tight flex items-center gap-2">
+                            <span>Rundown Acara {{ $availableDays[$selectedDay]['name'] ?? 'Hari Ini' }}</span>
+                            @if($selectedDay === $todayKey)
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Hari Ini</span>
+                            @endif
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ \Carbon\Carbon::now('Asia/Makassar')->isoFormat('dddd, D MMMM YYYY') }}</p>
                     </div>
                 </div>
 
@@ -167,7 +191,8 @@
 
                     <div class="scroll-tabs-container w-full" id="filterTabs">
                         @php
-                            $tabs = array_merge(['Semua', 'Nasional', 'Kalsel'], $categories ?? []);
+                            $assignedCategories = collect($programs ?? [])->pluck('kategori')->filter()->unique()->values()->toArray();
+                            $tabs = array_merge(['Semua', 'Nasional', 'Kalsel'], $assignedCategories);
                         @endphp
                         @foreach($tabs as $tab)
                             <button onclick="filterTab('{{ $tab }}')"
@@ -230,129 +255,7 @@
                     </thead>
                     <tbody id="rundownTable">
                         @php
-                            $dummyData = [
-                                [
-                                    'no' => 1,
-                                    'waktu' => '09:01:00',
-                                    'acara' => 'HABAR BANUA',
-                                    'kategori' => 'Berita',
-                                    'thumbnail' => 'habarbanua.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:59:00',
-                                    'info' => 'ON AIR',
-                                    'status' => 'LIVE',
-                                    'status_type' => 'live'
-                                ],
-                                [
-                                    'no' => 2,
-                                    'waktu' => '10:00:30',
-                                    'acara' => 'INI BORNEO',
-                                    'kategori' => 'Wisata & Budaya',
-                                    'thumbnail' => 'ini_borneo_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:59:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'RELAY',
-                                    'status_type' => 'relay'
-                                ],
-                                [
-                                    'no' => 3,
-                                    'waktu' => '15:00:30',
-                                    'acara' => 'PERSPEKTIF',
-                                    'kategori' => 'Talkshow',
-                                    'thumbnail' => 'perspektif_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:59:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'RELAY',
-                                    'status_type' => 'relay'
-                                ],
-                                [
-                                    'no' => 4,
-                                    'waktu' => '17:00:00',
-                                    'acara' => 'KALSEL HARI INI',
-                                    'kategori' => 'Berita',
-                                    'thumbnail' => 'kalseltoday_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:30:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'LIVE',
-                                    'status_type' => 'live'
-                                ],
-                                [
-                                    'no' => 5,
-                                    'waktu' => '17:30:00',
-                                    'acara' => 'INSPIRASI INDONESIA',
-                                    'kategori' => 'Dokumenter',
-                                    'thumbnail' => 'inspirasiindo_thumb.PNG',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:15:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'RERUN',
-                                    'status_type' => 'rerun'
-                                ],
-                                [
-                                    'no' => 6,
-                                    'waktu' => '17:45:00',
-                                    'acara' => 'KAJIAN TAUHID',
-                                    'kategori' => 'Religi',
-                                    'thumbnail' => 'kajian_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:15:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'PLAYBACK',
-                                    'status_type' => 'playback'
-                                ],
-                                [
-                                    'no' => 7,
-                                    'waktu' => '18:00:00',
-                                    'acara' => 'ADZAN MAGHRIB',
-                                    'kategori' => 'Religi',
-                                    'thumbnail' => 'adzan_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:05:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'PLAYBACK',
-                                    'status_type' => 'playback'
-                                ],
-                                [
-                                    'no' => 8,
-                                    'waktu' => '18:05:00',
-                                    'acara' => 'KAJIAN TAUHID (LANJUTAN)',
-                                    'kategori' => 'Religi',
-                                    'thumbnail' => 'kajian_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:26:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'PLAYBACK',
-                                    'status_type' => 'playback'
-                                ],
-                                [
-                                    'no' => 9,
-                                    'waktu' => '18:31:00',
-                                    'acara' => 'PESONA INDONESIA - KALSEL',
-                                    'kategori' => 'Dokumenter',
-                                    'thumbnail' => 'pesonaindo_thumb.PNG',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:30:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'PLAYBACK',
-                                    'status_type' => 'playback'
-                                ],
-                                [
-                                    'no' => 10,
-                                    'waktu' => '19:01:00',
-                                    'acara' => 'MAWARUNG',
-                                    'kategori' => 'Talkshow',
-                                    'thumbnail' => 'mawarung_thumb.jpg',
-                                    'channel' => 'Kalsel',
-                                    'durasi' => '0:59:00',
-                                    'info' => 'MENUNGGU',
-                                    'status' => 'PLAYBACK',
-                                    'status_type' => 'playback'
-                                ],
-                            ];
-                            $tableData = $programs ?? $dummyData;
+                            $tableData = $programs ?? [];
                         @endphp
 
                         @foreach($tableData as $row)
@@ -364,7 +267,7 @@
                             @endphp
                             <tr class="rundown-row border-b border-slate-100/80 hover:bg-blue-50/50 transition-all cursor-pointer group"
                                 data-channel="{{ $row['channel'] }}"
-                                data-category="{{ $row['kategori'] }}"
+                                data-category="{{ $row['kategori'] ?? '' }}"
                                 data-title="{{ $row['acara'] }}"
                                 onclick='openProgramDetailModal(@json($rowModalData))'
                                 title="Klik untuk melihat deskripsi dan jam tayang acara">
@@ -383,7 +286,7 @@
                                 {{-- Mata Acara --}}
                                 <td class="px-3 py-2.5">
                                     <div class="flex items-center gap-2.5">
-                                        @if($row['thumbnail'])
+                                        @if(!empty($row['thumbnail']))
                                             <img src="{{ asset('images/thumbnails/' . $row['thumbnail']) }}"
                                                  alt="{{ $row['acara'] }}"
                                                  class="w-10 h-6 sm:w-11 sm:h-7 rounded object-cover flex-shrink-0 shadow-xs border border-slate-200/50 group-hover:scale-105 transition-transform">
@@ -392,12 +295,14 @@
                                                 <iconify-icon icon="lucide:tv" class="text-slate-400" width="14"></iconify-icon>
                                             </div>
                                         @endif
-                                        <div>
-                                            <p class="font-bold text-slate-900 text-xs leading-tight group-hover:text-[#0052cc] transition-colors flex items-center gap-1.5">
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-slate-900 text-xs leading-tight group-hover:text-[#0052cc] transition-colors flex items-center gap-1.5 truncate">
                                                 <span>{{ $row['acara'] }}</span>
-                                                <iconify-icon icon="heroicons:arrow-top-right-on-square" width="12" class="opacity-0 group-hover:opacity-70 text-blue-500 transition-opacity"></iconify-icon>
+                                                <iconify-icon icon="heroicons:arrow-top-right-on-square" width="12" class="opacity-0 group-hover:opacity-70 text-blue-500 transition-opacity shrink-0"></iconify-icon>
                                             </p>
-                                            <p class="text-[11px] text-slate-400 font-normal leading-tight mt-0.5">{{ $row['kategori'] }}</p>
+                                            @if(!empty($row['kategori']))
+                                                <p class="text-[11px] text-slate-400 font-normal leading-tight mt-0.5">{{ $row['kategori'] }}</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -469,29 +374,31 @@
             </div>
             <div class="space-y-3">
                 @php
-                    $nextPrograms = [
-                        ['waktu' => '10:00:30', 'acara' => 'INI BORNEO',      'kategori' => 'Wisata & Budaya', 'thumbnail' => 'ini_borneo_thumb.jpg'],
-                        ['waktu' => '15:00:30', 'acara' => 'PERSPEKTIF',      'kategori' => 'Talkshow',        'thumbnail' => 'perspektif_thumb.jpg'],
-                        ['waktu' => '17:00:00', 'acara' => 'KALSEL HARI INI', 'kategori' => 'Berita',          'thumbnail' => 'kalseltoday_thumb.jpg'],
-                        ['waktu' => '18:00:00', 'acara' => 'KAJIAN TAUHID',   'kategori' => 'Religi',          'thumbnail' => 'kajian_thumb.jpg'],
-                        ['waktu' => '18:00:00', 'acara' => 'ADZAN MAGHRIB',   'kategori' => 'Religi',          'thumbnail' => 'adzan_thumb.jpg'],
-                    ];
+                    $nextPrograms = collect($tableData)
+                        ->filter(function($p) {
+                            $title = strtoupper($p['acara'] ?? '');
+                            return !in_array($title, ['STING', 'PSA', 'TINJAUAN ACARA', 'PSA & STING', 'PSA / STING', 'PSA DAN STING']);
+                        })
+                        ->take(5);
                 @endphp
                 @foreach($nextPrograms as $prog)
                     @php
-                        $matchedProg = collect($tableData)->firstWhere('acara', $prog['acara']) ?? $prog;
-                        $progModalData = array_merge($matchedProg, [
-                            'thumbnail_url' => !empty($matchedProg['thumbnail']) ? asset('images/thumbnails/' . $matchedProg['thumbnail']) : (!empty($prog['thumbnail']) ? asset('images/thumbnails/' . $prog['thumbnail']) : null),
-                            'description' => !empty($matchedProg['description']) ? $matchedProg['description'] : 'Program siaran pilihan TVRI Kalimantan Selatan.'
+                        $progModalData = array_merge($prog, [
+                            'thumbnail_url' => !empty($prog['thumbnail']) ? asset('images/thumbnails/' . $prog['thumbnail']) : null,
+                            'description' => !empty($prog['description']) ? $prog['description'] : 'Program siaran pilihan TVRI Kalimantan Selatan.'
                         ]);
                     @endphp
                     <div class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-blue-50/60 transition cursor-pointer group"
                          onclick='openProgramDetailModal(@json($progModalData))'
                          title="Klik untuk melihat deskripsi & jam tayang">
-                        <div class="w-14 h-9 rounded-lg overflow-hidden flex-shrink-0 shadow-xs border border-slate-100 group-hover:scale-105 transition-transform">
-                            <img src="{{ asset('images/thumbnails/' . ($prog['thumbnail'] ?? 'habarbanua.jpg')) }}"
-                                 alt="{{ $prog['acara'] }}"
-                                 class="w-full h-full object-cover">
+                        <div class="w-14 h-9 rounded-lg overflow-hidden flex-shrink-0 shadow-xs border border-slate-100 group-hover:scale-105 transition-transform bg-slate-100 flex items-center justify-center">
+                            @if(!empty($prog['thumbnail']))
+                                <img src="{{ asset('images/thumbnails/' . $prog['thumbnail']) }}"
+                                     alt="{{ $prog['acara'] }}"
+                                     class="w-full h-full object-cover">
+                            @else
+                                <iconify-icon icon="lucide:tv" class="text-slate-400" width="18"></iconify-icon>
+                            @endif
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="text-[11px] text-slate-400 font-medium leading-none mb-1 flex items-center gap-1">
@@ -499,7 +406,7 @@
                                 <span>{{ $prog['waktu'] }}</span>
                             </p>
                             <p class="text-xs font-extrabold text-[#1e3a8a] group-hover:text-blue-600 transition-colors leading-tight truncate">{{ $prog['acara'] }}</p>
-                            <p class="text-[10px] text-slate-400 leading-none mt-1">{{ $prog['kategori'] }}</p>
+                            <p class="text-[10px] text-slate-400 leading-none mt-1">{{ $prog['kategori'] ?? '' }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -518,7 +425,7 @@
                     <iconify-icon icon="lucide:tv" class="text-[#0066ff]" width="26"></iconify-icon>
                     <div class="text-right">
                         <span class="text-[10px] font-semibold text-blue-600 block leading-tight">Total Acara</span>
-                        <span class="text-xl font-extrabold text-[#0066ff] leading-none">8</span>
+                        <span class="text-xl font-extrabold text-[#0066ff] leading-none">{{ count($tableData) }}</span>
                     </div>
                 </div>
 
@@ -527,7 +434,7 @@
                     <iconify-icon icon="lucide:radio" class="text-[#e11d48] live-pulse" width="26"></iconify-icon>
                     <div class="text-right">
                         <span class="text-[10px] font-semibold text-red-600 block leading-tight">Live</span>
-                        <span class="text-xl font-extrabold text-[#e11d48] leading-none">2</span>
+                        <span class="text-xl font-extrabold text-[#e11d48] leading-none">{{ collect($tableData)->where('status_type', 'live')->count() }}</span>
                     </div>
                 </div>
 
@@ -536,7 +443,7 @@
                     <iconify-icon icon="lucide:check-circle-2" class="text-[#16a34a]" width="26"></iconify-icon>
                     <div class="text-right">
                         <span class="text-[10px] font-semibold text-green-600 block leading-tight">Selesai</span>
-                        <span class="text-xl font-extrabold text-[#16a34a] leading-none">3</span>
+                        <span class="text-xl font-extrabold text-[#16a34a] leading-none">{{ collect($tableData)->where('info', 'SUDAH TAYANG')->count() }}</span>
                     </div>
                 </div>
 
@@ -545,7 +452,7 @@
                     <iconify-icon icon="lucide:clock" class="text-[#d97706]" width="26"></iconify-icon>
                     <div class="text-right">
                         <span class="text-[10px] font-semibold text-amber-600 block leading-tight">Menunggu</span>
-                        <span class="text-xl font-extrabold text-[#d97706] leading-none">5</span>
+                        <span class="text-xl font-extrabold text-[#d97706] leading-none">{{ collect($tableData)->where('info', 'MENUNGGU')->count() }}</span>
                     </div>
                 </div>
             </div>
@@ -639,6 +546,26 @@
                 </div>
             </div>
 
+            {{-- Info Tambahan: Produser / Host / Narasumber jika ada di spreadsheet --}}
+            <div id="modalProgCredits" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs p-3 rounded-2xl bg-blue-50/50 border border-blue-100/70">
+                <div id="modalProgHostWrap" class="hidden">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Pembawa Acara</span>
+                    <span id="modalProgHost" class="font-bold text-slate-800"></span>
+                </div>
+                <div id="modalProgNarasumberWrap" class="hidden">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Narasumber</span>
+                    <span id="modalProgNarasumber" class="font-bold text-slate-800"></span>
+                </div>
+                <div id="modalProgProduserWrap" class="hidden">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Produser</span>
+                    <span id="modalProgProduser" class="font-bold text-slate-800"></span>
+                </div>
+                <div id="modalProgTemaWrap" class="hidden">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Tema Siaran</span>
+                    <span id="modalProgTema" class="font-bold text-slate-800"></span>
+                </div>
+            </div>
+
             {{-- Deskripsi Acara --}}
             <div class="space-y-1.5">
                 <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -680,9 +607,47 @@
         const titleEl = document.getElementById('modalProgTitle');
         if (titleEl) titleEl.textContent = prog.acara || 'Program Acara';
 
+        // Set Credits (Host, Narasumber, Produser, Tema)
+        const creditsEl = document.getElementById('modalProgCredits');
+        let hasCredit = false;
+
+        const setCreditItem = (wrapId, textId, val) => {
+            const wrap = document.getElementById(wrapId);
+            const text = document.getElementById(textId);
+            if (wrap && text) {
+                if (val && val !== '//' && val !== '-' && val.trim() !== '') {
+                    text.textContent = val;
+                    wrap.classList.remove('hidden');
+                    hasCredit = true;
+                } else {
+                    wrap.classList.add('hidden');
+                }
+            }
+        };
+
+        setCreditItem('modalProgHostWrap', 'modalProgHost', prog.host);
+        setCreditItem('modalProgNarasumberWrap', 'modalProgNarasumber', prog.narasumber);
+        setCreditItem('modalProgProduserWrap', 'modalProgProduser', prog.produser);
+        setCreditItem('modalProgTemaWrap', 'modalProgTema', prog.tema);
+
+        if (creditsEl) {
+            if (hasCredit) {
+                creditsEl.classList.remove('hidden');
+            } else {
+                creditsEl.classList.add('hidden');
+            }
+        }
+
         // Set Kategori & Channel
         const catEl = document.getElementById('modalProgCategory');
-        if (catEl) catEl.textContent = prog.kategori || 'TVRI Kalsel';
+        if (catEl) {
+            if (prog.kategori && prog.kategori.trim() !== '') {
+                catEl.textContent = prog.kategori;
+                catEl.classList.remove('hidden');
+            } else {
+                catEl.classList.add('hidden');
+            }
+        }
 
         const chanEl = document.getElementById('modalProgChannel');
         if (chanEl) chanEl.textContent = prog.channel || 'Kalsel';

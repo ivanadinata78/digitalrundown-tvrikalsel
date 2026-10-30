@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Channel;
 use App\Models\ProgramDetail;
-use App\Models\User;
+use App\Services\RundownSheetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,177 +13,64 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    /**
-     * Data master program siaran default TVRI Kalimantan Selatan.
-     */
-    protected function getDefaultPrograms(): array
-    {
-        return [
-            [
-                'id'          => 1,
-                'no'          => 1,
-                'waktu'       => '09:01:00',
-                'acara'       => 'HABAR BANUA',
-                'kategori'    => 'Berita',
-                'thumbnail'   => 'habarbanua.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:59:00',
-                'info'        => 'ON AIR',
-                'status'      => 'LIVE',
-                'status_type' => 'live',
-                'description' => 'Menghadirkan informasi terkini seputar Kalimantan Selatan, dengan beragam berita dan kabar terbaru dari masyarakat Banua.',
-            ],
-            [
-                'id'          => 2,
-                'no'          => 2,
-                'waktu'       => '10:00:30',
-                'acara'       => 'INI BORNEO',
-                'kategori'    => 'Wisata & Budaya',
-                'thumbnail'   => 'ini_borneo_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:59:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'RELAY',
-                'status_type' => 'relay',
-                'description' => 'Jelajah pesona alam, adat istiadat, dan kekayaan ragam budaya pulau Kalimantan yang memukau dan kaya sejarah nusantara.',
-            ],
-            [
-                'id'          => 3,
-                'no'          => 3,
-                'waktu'       => '15:00:30',
-                'acara'       => 'PERSPEKTIF',
-                'kategori'    => 'Talkshow',
-                'thumbnail'   => 'perspektif_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:59:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'RELAY',
-                'status_type' => 'relay',
-                'description' => 'Program dialog interaktif mengupas isu hangat, opini publik, dan wawasan mendalam bersama para narasumber terpercaya.',
-            ],
-            [
-                'id'          => 4,
-                'no'          => 4,
-                'waktu'       => '17:00:00',
-                'acara'       => 'KALSEL HARI INI',
-                'kategori'    => 'Berita',
-                'thumbnail'   => 'kalseltoday_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:30:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'LIVE',
-                'status_type' => 'live',
-                'description' => 'Rangkuman peristiwa penting, liputan langsung, dan perkembangan terkini dari penjuru Kalimantan Selatan pada sore hari.',
-            ],
-            [
-                'id'          => 5,
-                'no'          => 5,
-                'waktu'       => '17:30:00',
-                'acara'       => 'INSPIRASI INDONESIA',
-                'kategori'    => 'Dokumenter',
-                'thumbnail'   => 'inspirasiindo_thumb.PNG',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:15:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'RERUN',
-                'status_type' => 'rerun',
-                'description' => 'Kisah nyata penuh inspirasi dari sosok-sosok pejuang kehidupan dan inovator lokal yang memberi dampak positif bagi bangsa.',
-            ],
-            [
-                'id'          => 6,
-                'no'          => 6,
-                'waktu'       => '17:45:00',
-                'acara'       => 'KAJIAN TAUHID',
-                'kategori'    => 'Religi',
-                'thumbnail'   => 'kajian_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:15:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'PLAYBACK',
-                'status_type' => 'playback',
-                'description' => 'Tausiyah seputar penguatan keimanan, nilai-nilai ketauhidan, dan panduan ibadah sehari-hari dalam kehidupan bermasyarakat.',
-            ],
-            [
-                'id'          => 7,
-                'no'          => 7,
-                'waktu'       => '18:00:00',
-                'acara'       => 'ADZAN MAGHRIB',
-                'kategori'    => 'Religi',
-                'thumbnail'   => 'adzan_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:05:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'PLAYBACK',
-                'status_type' => 'playback',
-                'description' => 'Siaran kumandang adzan maghrib untuk wilayah Banjarmasin dan sekitarnya (Waktu Indonesia Tengah).',
-            ],
-            [
-                'id'          => 8,
-                'no'          => 8,
-                'waktu'       => '18:05:00',
-                'acara'       => 'KAJIAN TAUHID (LANJUTAN)',
-                'kategori'    => 'Religi',
-                'thumbnail'   => 'kajian_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:26:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'PLAYBACK',
-                'status_type' => 'playback',
-                'description' => 'Lanjutan pembahasan kajian keislaman dan sesi tanya jawab keagamaan bersama ustadz pembina.',
-            ],
-            [
-                'id'          => 9,
-                'no'          => 9,
-                'waktu'       => '18:31:00',
-                'acara'       => 'PESONA INDONESIA - KALSEL',
-                'kategori'    => 'Dokumenter',
-                'thumbnail'   => 'pesonaindo_thumb.PNG',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:30:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'PLAYBACK',
-                'status_type' => 'playback',
-                'description' => 'Dokumenter keindahan bentang alam, pasar terapung, dan kearifan lokal masyarakat Kalimantan Selatan.',
-            ],
-            [
-                'id'          => 10,
-                'no'          => 10,
-                'waktu'       => '19:01:00',
-                'acara'       => 'MAWARUNG',
-                'kategori'    => 'Talkshow',
-                'thumbnail'   => 'mawarung_thumb.jpg',
-                'channel'     => 'Kalsel',
-                'durasi'      => '0:59:00',
-                'info'        => 'MENUNGGU',
-                'status'      => 'PLAYBACK',
-                'status_type' => 'playback',
-                'description' => 'Obrolan santai dan jenaka bernuansa khas warung Banjar, sarat dengan kritik membangun dan humor segar.',
-            ],
-        ];
-    }
+    public function __construct(
+        protected RundownSheetService $sheetService
+    ) {}
 
     /**
-     * Tampilkan dashboard admin dengan daftar acara dan form edit interaktif di sampingnya.
+     * Tampilkan dashboard admin dengan daftar acara dari Google Spreadsheet
+     * dan panel editor detail acara interaktif.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $programs = ProgramDetail::getProgramsWithDetails();
-        $currentOnAir = ProgramDetail::getCurrentOnAir($programs);
+        $availableDays = $this->sheetService->getAvailableDays();
+        $todayKey = $this->sheetService->getTodayKey();
 
-        // Kategori untuk dropdown dan filter tab langsung dari database
+        // Hari yang dipilih melalui tab / query param ?hari= (default: hari ini)
+        $selectedDay = strtolower($request->query('hari', $todayKey));
+        if (!isset($availableDays[$selectedDay])) {
+            $selectedDay = $todayKey;
+        }
+
+        $programs = $this->sheetService->getProgramsByDay($selectedDay);
+        $currentOnAir = $this->sheetService->getCurrentOnAir($programs);
+
+        // Pastikan seeder kategori ada jika kosong
         if (Category::count() === 0) {
             (new \Database\Seeders\CategorySeeder())->run();
         }
         $categories = Category::orderBy('name')->pluck('name')->toArray();
 
+        // Hitung statistik aktual dari spreadsheet
         $stats = [
             'total_acara'    => count($programs),
             'total_live'     => collect($programs)->where('status_type', 'live')->count(),
-            'total_selesai'  => 3,
-            'total_menunggu' => 5,
+            'total_selesai'  => collect($programs)->where('info', 'SUDAH TAYANG')->count(),
+            'total_menunggu' => collect($programs)->where('info', 'MENUNGGU')->count(),
         ];
 
-        return view('admin.dashboard', compact('programs', 'categories', 'stats', 'currentOnAir'));
+        return view('admin.dashboard', compact(
+            'programs',
+            'categories',
+            'stats',
+            'currentOnAir',
+            'availableDays',
+            'selectedDay',
+            'todayKey'
+        ));
+    }
+
+    /**
+     * Sinkronkan ulang data langsung dari Google Spreadsheet (menghapus cache dan re-fetch).
+     */
+    public function syncFromSheets(Request $request): RedirectResponse
+    {
+        $this->sheetService->clearAllCache();
+        $todayKey = $this->sheetService->getTodayKey();
+        $this->sheetService->getProgramsByDay($todayKey, true);
+
+        return redirect()->back()
+            ->with('status', 'Jadwal siaran berhasil disinkronkan langsung dari Google Spreadsheet TVRI Kalsel!');
     }
 
     /**
@@ -217,6 +103,9 @@ class DashboardController extends Controller
 
         $detail->save();
 
+        // Hapus cache agar pembaruan thumbnail/kategori/deskripsi langsung terlihat di rundown
+        $this->sheetService->clearAllCache();
+
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -231,7 +120,7 @@ class DashboardController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->back()
             ->with('status', "Detail acara '{$detail->program_title}' berhasil diperbarui.");
     }
 }

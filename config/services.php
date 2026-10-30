@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'google_sheets' => [
+        'spreadsheet_id' => env('GOOGLE_SPREADSHEET_ID', '10oD1E2PCXxhcfNqHAoJybdWNDO31vGAy6zk29FmnFww'),
+    ],
+
 ];
