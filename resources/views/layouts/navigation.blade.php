@@ -106,7 +106,7 @@
                             @endif
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-black text-sm text-white truncate leading-tight">{{ Auth::user()?->name }}</h4>
-                                <span class="text-[11px] font-mono text-blue-200 block truncate">@<span>{{ Auth::user()->username }}</span></span>
+                                <span class="text-[11px] font-mono text-blue-200 block truncate"></span>
                                 <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider {{ Auth::user()->isAdmin() ? 'bg-amber-400/25 text-amber-200 border border-amber-300/30' : 'bg-emerald-400/25 text-emerald-200 border border-emerald-300/30' }}">
                                     <iconify-icon icon="{{ Auth::user()->isAdmin() ? 'heroicons:shield-check-solid' : 'heroicons:user-solid' }}" width="11"></iconify-icon>
                                     <span>{{ Auth::user()->isAdmin() ? 'Super Administrator' : 'Karyawan / Operator' }}</span>
@@ -126,7 +126,6 @@
                                 </div>
                                 <div class="text-left">
                                     <span class="block font-extrabold text-slate-800 group-hover:text-blue-700">Profil Saya</span>
-                                    <span class="block text-[10px] text-slate-400 font-medium">Ubah nama & foto profil</span>
                                 </div>
                             </div>
                             <iconify-icon icon="heroicons:chevron-right" width="14" class="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition"></iconify-icon>
@@ -142,7 +141,6 @@
                                 </div>
                                 <div class="text-left">
                                     <span class="block font-extrabold text-slate-800">Halaman Publik</span>
-                                    <span class="block text-[10px] text-slate-400 font-medium">Lihat siaran rundown live</span>
                                 </div>
                             </div>
                             <iconify-icon icon="heroicons:chevron-right" width="14" class="text-slate-300 group-hover:translate-x-0.5 transition"></iconify-icon>
@@ -160,7 +158,6 @@
                                 </div>
                                 <div>
                                     <span class="block font-extrabold">Keluar (Log Out)</span>
-                                    <span class="block text-[10px] text-red-400 font-medium">Selesaikan sesi masuk Anda</span>
                                 </div>
                             </button>
                         </form>

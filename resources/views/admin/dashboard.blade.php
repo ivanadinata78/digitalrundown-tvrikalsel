@@ -134,12 +134,10 @@
                     position: relative;
                     display: flex;
                     align-items: center;
-                    max-width: 100%;
-                }
-                @media (min-width: 640px) {
-                    .tabs-scroll-wrapper {
-                        max-width: 62%;
-                    }
+                    width: 100%;
+                    overflow: hidden;
+                    padding: 0 26px; /* ruang untuk tombol nav kiri & kanan */
+                    box-sizing: border-box;
                 }
                 .scroll-tabs-container {
                     display: flex !important;
@@ -152,8 +150,9 @@
                     -ms-overflow-style: none;
                     -webkit-overflow-scrolling: touch;
                     scroll-behavior: smooth;
-                    padding-left: 2px;
-                    padding-right: 2px;
+                    padding: 2px 4px;
+                    min-width: 0;
+                    flex: 1;
                 }
                 .scroll-tabs-container::-webkit-scrollbar {
                     display: none !important;
@@ -167,10 +166,10 @@
                     top: 50%;
                     transform: translateY(-50%);
                     z-index: 20;
-                    width: 28px;
-                    height: 28px;
+                    width: 24px;
+                    height: 24px;
                     border-radius: 9999px;
-                    background: rgba(255, 255, 255, 0.95);
+                    background: rgba(255, 255, 255, 0.97);
                     backdrop-filter: blur(4px);
                     border: 1px solid rgba(226, 232, 240, 0.9);
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -182,6 +181,7 @@
                     opacity: 0;
                     pointer-events: none;
                     cursor: pointer;
+                    flex-shrink: 0;
                 }
                 .tabs-scroll-wrapper:hover .tab-nav-btn {
                     opacity: 1;
@@ -198,10 +198,10 @@
                     transform: translateY(-50%) scale(0.95);
                 }
                 .tab-nav-left {
-                    left: -10px;
+                    left: 0;
                 }
                 .tab-nav-right {
-                    right: -10px;
+                    right: 0;
                 }
             </style>
             
@@ -213,7 +213,7 @@
                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 {{ $selectedDay === $dayKey ? 'bg-[#0066ff] text-white shadow-xs' : 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900' }}">
                             <span>{{ $dayData['name'] }}</span>
                             @if($dayKey === $todayKey)
-                                <span class="text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-700' }}">Hari Ini</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white text-[#0066ff]' : 'bg-emerald-500 text-white' }}">Hari Ini</span>
                             @endif
                         </a>
                     @endforeach
@@ -233,12 +233,11 @@
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Hari Ini</span>
                             @endif
                         </h2>
-                        <p class="text-xs text-slate-400">Jadwal siaran langsung tersinkron dengan spreadsheet.</p>
                     </div>
                 </div>
 
                 {{-- Filter Tabs (Scroll ke Samping dengan Tombol Geser) --}}
-                <div class="tabs-scroll-wrapper">
+                <div class="tabs-scroll-wrapper min-w-0 flex-1">
                     {{-- Tombol Geser Kiri --}}
                     <button type="button"
                             onclick="scrollTabs('left', 'programFilterTabs')"

@@ -155,7 +155,7 @@
                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 {{ $selectedDay === $dayKey ? 'bg-[#0066ff] text-white shadow-xs' : 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900' }}">
                             <span>{{ $dayData['name'] }}</span>
                             @if($dayKey === $todayKey)
-                                <span class="text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-700' }}">Hari Ini</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider {{ $selectedDay === $dayKey ? 'bg-white text-[#0066ff]' : 'bg-emerald-500 text-white' }}">Hari Ini</span>
                             @endif
                         </a>
                     @endforeach
@@ -172,10 +172,10 @@
                         <h2 class="text-base font-bold text-slate-800 leading-tight flex items-center gap-2">
                             <span>Rundown Acara {{ $availableDays[$selectedDay]['name'] ?? 'Hari Ini' }}</span>
                             @if($selectedDay === $todayKey)
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Hari Ini</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white">Hari Ini</span>
                             @endif
                         </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">{{ \Carbon\Carbon::now('Asia/Makassar')->isoFormat('dddd, D MMMM YYYY') }}</p>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ \Carbon\Carbon::now('Asia/Makassar')->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</p>
                     </div>
                 </div>
 
