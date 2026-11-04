@@ -210,14 +210,21 @@ class RundownSheetService
             $narasumber = $this->getColumnValue($row, $colIndex, ['NARASUMBER'], 16);
             $tema       = $this->getColumnValue($row, $colIndex, ['TEMA'], 17);
 
-            $acaraClean  = trim($mataAcara);
+            // Bersihkan whitespace dan newlines di dalam string
+            $acaraClean  = trim(preg_replace('/\s+/', ' ', $mataAcara));
             $waktuClean  = trim($waktuRaw);
-            $judulClean  = trim($judulAcara);
+            $judulClean  = trim(preg_replace('/\s+/', ' ', $judulAcara));
+            $judulClean  = trim($judulClean, " \t\n\r\0\x0B\"'");
             $durasiClean = trim($durasiRaw);
 
             // 1. Validasi baris: lewati yang kosong (tidak ada mata acara atau tidak ada jam tayang)
             if (empty($acaraClean) || empty($waktuClean)) {
                 continue;
+            }
+
+            // 1b. Khusus acara RELAY NASIONAL: jika kolom JUDUL ACARA terisi, gunakan JUDUL ACARA sebagai nama mata acara
+            if (str_contains(strtoupper($acaraClean), 'RELAY NASIONAL') && !empty($judulClean)) {
+                $acaraClean = $judulClean;
             }
 
             // 2. Lewati baris formula/sum durasi di bagian bawah yang tidak memiliki channel dan status
@@ -275,22 +282,29 @@ class RundownSheetService
             $baseName = $this->resolveBaseProgramName($acaraClean);
             $isVariant = ($baseName !== $acaraClean);
 
-            // Thumbnail & deskripsi SELALU dari baseName agar varian mewarisi tampilan program asli
+            // Thumbnail & deskripsi default
             $thumbnail = $this->resolveDefaultThumbnail($baseName);
+            if (empty($thumbnail)) {
+                $thumbnail = $this->resolveDefaultThumbnail($acaraClean);
+            }
             $deskripsi = $this->resolveDefaultDescription($baseName, $tema);
 
             // Kategori DIKOSONGKAN secara default sesuai instruksi user (akan diklasifikasikan manual oleh user)
             $kategori = '';
 
             // Merge dengan database ProgramDetail jika ada kustomisasi admin
-            // PRIORITAS: baseName dulu (agar varian mewarisi data program induk),
-            // baru exact match jika memang tidak ada record baseName di DB
-            if (isset($savedDetails[$baseName])) {
-                $detail = $savedDetails[$baseName];
-            } elseif (isset($savedDetails[$acaraClean])) {
-                $detail = $savedDetails[$acaraClean];
+            // Cari dari baseName maupun exact match acaraClean
+            $baseDetail  = $savedDetails[$baseName] ?? null;
+            $exactDetail = $savedDetails[$acaraClean] ?? null;
+
+            // Prioritaskan detail yang memiliki kustomisasi admin (thumbnail / kategori / deskripsi)
+            $detail = null;
+            if ($baseDetail && (!empty($baseDetail->thumbnail_url) || !empty($baseDetail->category) || !empty($baseDetail->description))) {
+                $detail = $baseDetail;
+            } elseif ($exactDetail && (!empty($exactDetail->thumbnail_url) || !empty($exactDetail->category) || !empty($exactDetail->description))) {
+                $detail = $exactDetail;
             } else {
-                $detail = null;
+                $detail = $baseDetail ?? $exactDetail;
             }
 
             if ($detail) {
@@ -443,13 +457,16 @@ class RundownSheetService
         // Normalisasi whitespace (newlines dari CSV kadang masuk ke nama acara)
         $base = trim(preg_replace('/\s+/', ' ', $acara));
 
-        // 1. Hapus isi dalam tanda kurung di akhir: (RERUN), (KALBAR), (LANJUTAN), (KALTARA), (MATERI NASIONAL), dll.
+        // 1. Hapus penanda (RERUN) beserta opsi program alternatif setelahnya, misal: "(RERUN) / NOSTALGIA" atau "(RERUN)"
+        $base = preg_replace('/\s*\(\s*RERUN\s*\)\s*(?:\/\s*[^()]+)?\s*$/i', '', $base);
+
+        // 2. Hapus isi dalam tanda kurung di akhir: (RERUN), (KALBAR), (LANJUTAN), (KALTARA), (MATERI NASIONAL), dll.
         $base = preg_replace('/\s*\([^)]*\)\s*$/', '', $base);
 
-        // 2. Hapus sufiks " - REGION" seperti " - KALSEL", " - NUSANTARA / BORNEO"
+        // 3. Hapus sufiks " - REGION" seperti " - KALSEL", " - NUSANTARA / BORNEO"
         $base = preg_replace('/\s*-\s*(?:KALSEL|KALTIM|KALBAR|KALTENG|KALTARA|NUSANTARA(?:\s*\/\s*BORNEO)?|NASIONAL)\s*$/i', '', $base);
 
-        // 3. Hapus nama region yang berdiri sendiri di akhir (tanpa tanda kurung), misal: "INI BORNEO KALSEL" → "INI BORNEO"
+        // 4. Hapus nama region yang berdiri sendiri di akhir (tanpa tanda kurung), misal: "INI BORNEO KALSEL" → "INI BORNEO"
         $base = preg_replace('/\s+(?:KALSEL|KALTIM|KALBAR|KALTENG|KALTARA)\s*$/i', '', $base);
 
         return trim($base);
@@ -519,6 +536,20 @@ class RundownSheetService
                     ]
                 );
                 $existingTitles[$title] = true;
+            }
+
+            // Pastikan program induk (baseName) juga terdaftar di database agar varian selalu memiliki induk
+            $baseName = $this->resolveBaseProgramName($title);
+            if ($baseName !== $title && !isset($existingTitles[$baseName])) {
+                ProgramDetail::firstOrCreate(
+                    ['program_title' => $baseName],
+                    [
+                        'category'      => null,
+                        'description'   => $prog['description'] ?? null,
+                        'thumbnail_url' => !empty($prog['thumbnail']) ? $prog['thumbnail'] : null,
+                    ]
+                );
+                $existingTitles[$baseName] = true;
             }
         }
     }

@@ -86,7 +86,10 @@ class DashboardController extends Controller
             'remove_thumbnail' => ['nullable', 'boolean'],
         ]);
 
-        $detail = ProgramDetail::firstOrNew(['program_title' => $validated['program_title']]);
+        $programTitle = trim(preg_replace('/\s+/', ' ', $validated['program_title']));
+        $baseName = $this->sheetService->resolveBaseProgramName($programTitle);
+
+        $detail = ProgramDetail::firstOrNew(['program_title' => $programTitle]);
         $detail->category    = $validated['category'] ?? null;
         $detail->description = $validated['description'] ?? null;
         $detail->updated_by  = auth()->id();
@@ -102,6 +105,35 @@ class DashboardController extends Controller
         }
 
         $detail->save();
+
+        // SINKRONISASI KE PROGRAM INDUK & SELURUH VARIAN TERKAIT:
+        // Jika yang diedit adalah varian (misal 'TITIK TEMU / NGOPI (RERUN)'),
+        // perbarui juga program induknya ('TITIK TEMU / NGOPI') agar data tetap tersimpan
+        // dan sinkron meskipun program utama tidak ada di jadwal hari ini.
+        $targetTitles = [$baseName];
+
+        $allDetails = ProgramDetail::all();
+        foreach ($allDetails as $d) {
+            if ($this->sheetService->resolveBaseProgramName($d->program_title) === $baseName) {
+                $targetTitles[] = $d->program_title;
+            }
+        }
+        $targetTitles = array_unique($targetTitles);
+
+        foreach ($targetTitles as $title) {
+            if ($title === $programTitle) continue;
+
+            $related = ProgramDetail::firstOrNew(['program_title' => $title]);
+            $related->category = $detail->category;
+            $related->description = $detail->description;
+            if ($request->hasFile('thumbnail_image') || $request->boolean('remove_thumbnail')) {
+                $related->thumbnail_url = $detail->thumbnail_url;
+            } elseif (!empty($detail->thumbnail_url)) {
+                $related->thumbnail_url = $detail->thumbnail_url;
+            }
+            $related->updated_by = auth()->id();
+            $related->save();
+        }
 
         // Hapus cache agar pembaruan thumbnail/kategori/deskripsi langsung terlihat di rundown
         $this->sheetService->clearAllCache();
