@@ -23,11 +23,11 @@
 
             <div class="relative z-10 p-4 sm:p-5 flex flex-col md:flex-row items-center gap-4 sm:gap-5 h-full">
 
-                {{-- THUMBNAIL KIRI: Habar Banua Box --}}
+                {{-- THUMBNAIL KIRI: Thumbnail Sedang Tayang --}}
                 <div class="w-full md:w-[240px] lg:w-[250px] h-[155px] sm:h-[170px] rounded-2xl overflow-hidden shadow-md border border-white/20 flex-shrink-0 bg-sky-400">
                     <img id="hero-thumbnail"
-                         src="{{ asset('images/thumbnails/' . ($currentOnAir['thumbnail'] ?? 'habarbanua.jpg')) }}"
-                         alt="{{ $currentOnAir['acara'] ?? 'Habar Banua' }}"
+                         src="{{ asset('images/thumbnails/' . (!empty($currentOnAir['thumbnail']) ? $currentOnAir['thumbnail'] : 'default_thumb.jpg')) }}"
+                         alt="{{ $currentOnAir['acara'] ?? 'TVRI Kalimantan Selatan' }}"
                          class="w-full h-full object-cover">
                 </div>
 
@@ -41,7 +41,7 @@
 
                     {{-- Judul Acara --}}
                     <h1 id="hero-title" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-none mb-1">
-                        {{ $currentOnAir['acara'] ?? 'HABAR BANUA' }}
+                        {{ $currentOnAir['acara'] ?? 'TVRI KALIMANTAN SELATAN' }}
                     </h1>
                     @if(!empty($currentOnAir['kategori']))
                         <p class="text-white/90 text-sm font-medium mb-3">
@@ -686,15 +686,11 @@
         const imgEl = document.getElementById('modalProgThumbnail');
         const fallbackEl = document.getElementById('modalProgThumbnailFallback');
         if (imgEl && fallbackEl) {
-            if (prog.thumbnail_url) {
-                imgEl.src = prog.thumbnail_url;
-                imgEl.alt = prog.acara || '';
-                imgEl.classList.remove('hidden');
-                fallbackEl.classList.add('hidden');
-            } else {
-                imgEl.classList.add('hidden');
-                fallbackEl.classList.remove('hidden');
-            }
+            const thumbSrc = prog.thumbnail_url || '{{ asset("images/thumbnails/default_thumb.jpg") }}';
+            imgEl.src = thumbSrc;
+            imgEl.alt = prog.acara || '';
+            imgEl.classList.remove('hidden');
+            fallbackEl.classList.add('hidden');
         }
 
         // Buka Modal & Kunci Scroll

@@ -384,7 +384,7 @@ class RundownSheetService
                 'status_type' => 'live',
                 'info' => 'ON AIR',
                 'kategori' => '',
-                'thumbnail' => 'habarbanua.jpg',
+                'thumbnail' => 'default_thumb.jpg',
                 'description' => 'Siaran TVRI Kalimantan Selatan menyajikan tayangan berkualitas.',
             ];
         }
@@ -496,7 +496,7 @@ class RundownSheetService
             }
         }
 
-        return '';
+        return 'default_thumb.jpg';
     }
 
     /**
@@ -532,7 +532,7 @@ class RundownSheetService
                     [
                         'category'      => null, // Dikosongkan agar diklasifikasikan sendiri oleh admin
                         'description'   => $prog['description'] ?? null,
-                        'thumbnail_url' => !empty($prog['thumbnail']) ? $prog['thumbnail'] : null,
+                        'thumbnail_url' => (!empty($prog['thumbnail']) && $prog['thumbnail'] !== 'default_thumb.jpg') ? $prog['thumbnail'] : null,
                     ]
                 );
                 $existingTitles[$title] = true;

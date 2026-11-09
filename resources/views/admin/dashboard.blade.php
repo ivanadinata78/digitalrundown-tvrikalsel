@@ -91,8 +91,8 @@
                 {{-- Thumbnail Acara Sedang Tayang --}}
                 <div class="w-28 sm:w-36 h-18 sm:h-20 rounded-xl overflow-hidden shadow-xs border border-white/20 shrink-0 bg-sky-500">
                     <img id="onair-banner-img"
-                         src="{{ asset('images/thumbnails/' . ($currentOnAir['thumbnail'] ?? 'habarbanua.jpg')) }}"
-                         alt="{{ $currentOnAir['acara'] ?? 'Habar Banua' }}"
+                         src="{{ asset('images/thumbnails/' . (!empty($currentOnAir['thumbnail']) ? $currentOnAir['thumbnail'] : 'default_thumb.jpg')) }}"
+                         alt="{{ $currentOnAir['acara'] ?? 'TVRI Kalimantan Selatan' }}"
                          class="w-full h-full object-cover">
                 </div>
 
@@ -449,7 +449,7 @@
                     {{-- Kotak Preview Gambar --}}
                     <div class="rounded-2xl overflow-hidden border border-slate-200 bg-sky-400 h-[170px] relative shadow-2xs">
                         <img id="form_thumbnail_preview"
-                             src="{{ asset('images/thumbnails/' . ($programs[0]['thumbnail'] ?? 'habarbanua.jpg')) }}"
+                             src="{{ !empty($programs[0]['thumbnail']) ? asset('images/thumbnails/' . $programs[0]['thumbnail']) : asset('images/thumbnails/default_thumb.jpg') }}"
                              alt="Thumbnail Acara"
                              class="w-full h-full object-cover">
                     </div>
@@ -559,7 +559,7 @@
             previewImg.src = thumbUrl;
             previewImg.style.display = 'block';
         } else {
-            previewImg.src = '{{ asset("images/thumbnails/habarbanua.jpg") }}';
+            previewImg.src = '{{ asset("images/thumbnails/default_thumb.jpg") }}';
         }
 
         // Set dropdown kategori
@@ -595,7 +595,7 @@
     // Handle hapus gambar thumbnail
     function handleRemoveThumbnail() {
         if (confirm('Apakah Anda yakin ingin menghapus gambar thumbnail acara ini?')) {
-            document.getElementById('form_thumbnail_preview').src = '{{ asset("images/thumbnails/habarbanua.jpg") }}';
+            document.getElementById('form_thumbnail_preview').src = '{{ asset("images/thumbnails/default_thumb.jpg") }}';
             document.getElementById('form_file_input').value = '';
             document.getElementById('input_remove_thumbnail').value = '1';
         }
@@ -753,11 +753,15 @@
                         currentActiveRow.setAttribute('data-thumb-url', res.data.thumbnail_url);
                         const thumbEl = currentActiveRow.querySelector('.row-thumb-img');
                         if (thumbEl) thumbEl.src = res.data.thumbnail_url;
-                        
+                    } else if (document.getElementById('input_remove_thumbnail').value === '1') {
+                        const defaultThumbUrl = '{{ asset("images/thumbnails/default_thumb.jpg") }}';
+                        currentActiveRow.setAttribute('data-thumb-url', defaultThumbUrl);
+                        const thumbEl = currentActiveRow.querySelector('.row-thumb-img');
+                        if (thumbEl) thumbEl.src = defaultThumbUrl;
                     }
 
                     // Jika yang diperbarui adalah acara yang sedang tayang sekarang (On Air), sinkronkan card biru atas
-                    const onAirTitle = @json($currentOnAir['acara'] ?? 'HABAR BANUA');
+                    const onAirTitle = @json($currentOnAir['acara'] ?? 'TVRI KALIMANTAN SELATAN');
                     if (newTitle === onAirTitle || (currentActiveRow && currentActiveRow.getAttribute('data-title') === onAirTitle)) {
                         const onAirTitleEl = document.getElementById('onair-banner-title');
                         const onAirCatEl   = document.getElementById('onair-banner-category');
