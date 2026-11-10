@@ -398,14 +398,6 @@
                     </tbody>
                 </table>
             </div>
-
-            {{-- Footer Pagination Dots --}}
-            <div class="pt-4 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-slate-200 inline-block"></span>
-            </div>
         </div>
 
         {{-- KOLOM KANAN: Form Edit Detail Acara Sesuai Mockup Gambar 1 --}}
